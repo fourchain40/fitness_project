@@ -1,0 +1,22 @@
+plugins {
+    id 'application'
+    id 'java'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.postgresql:postgresql:42.6.0'
+}
+
+javafx {
+    version = "20"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+application {
+    mainClass = 'Main' // update if your Main.java is in a package, e.g., 'com.example.Main'
+}
