@@ -6,21 +6,27 @@
 <AnchorPane xmlns="http://javafx.com/javafx/20"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="WorkoutController"
-            prefWidth="400" prefHeight="300">
+            prefWidth="400" prefHeight="400">
 
     <children>
+        <Label layoutX="50" layoutY="30" text="Workout Date"/>
+        <DatePicker fx:id="workoutDate" layoutX="150" layoutY="25"/>
+
+        <Label layoutX="50" layoutY="80" text="Duration (min)"/>
+        <TextField fx:id="durationField" layoutX="150" layoutY="75" promptText="e.g. 45"/>
+
+        <Label layoutX="50" layoutY="130" text="Notes"/>
         <TextArea fx:id="workoutDetails"
-                  layoutX="50" layoutY="50"
+                  layoutX="50" layoutY="160"
                   prefWidth="300" prefHeight="100"
-                  promptText="Enter your workout details here..." />
+                  promptText="Workout details..."/>
 
         <Button text="Log Workout"
-                layoutX="50" layoutY="170"
+                layoutX="150" layoutY="280"
                 onAction="#handleLogWorkout"/>
 
         <Label fx:id="confirmationLabel"
-               layoutX="50" layoutY="220"
+               layoutX="50" layoutY="330"
                text=""/>
     </children>
-
 </AnchorPane>

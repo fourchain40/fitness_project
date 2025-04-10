@@ -5,24 +5,44 @@ import java.time.LocalDate;
 
 public class WorkoutController {
     @FXML private TextArea workoutDetails;
+    @FXML private TextField durationField;
+    @FXML private DatePicker workoutDate;
     @FXML private Label confirmationLabel;
 
-    private int userId = 1; // Replace with actual logged-in user ID
+    // This should eventually be set when the user logs in
+    private int memberId = 1;
 
     @FXML
     private void handleLogWorkout() {
-        String details = workoutDetails.getText();
-        try (Connection conn = DriverManager.getConnection("jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
-            String sql = "INSERT INTO WorkoutLog (user_id, workout_date, workout_details) VALUES (?, ?, ?)";
+        String notes = workoutDetails.getText();
+        String durationText = durationField.getText();
+        LocalDate date = workoutDate.getValue();
+
+        if (notes.isEmpty() || durationText.isEmpty() || date == null) {
+            confirmationLabel.setText("Please fill out all fields.");
+            return;
+        }
+
+        try {
+            int duration = Integer.parseInt(durationText);
+
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:postgresql://localhost:5432/group29", "group29", "yourpassword");
+
+            String sql = "INSERT INTO WorkoutLog (member_id, workout_date, duration_minutes, notes) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, userId);
-            stmt.setDate(2, Date.valueOf(LocalDate.now()));
-            stmt.setString(3, details);
+            stmt.setInt(1, memberId);
+            stmt.setDate(2, Date.valueOf(date));
+            stmt.setInt(3, duration);
+            stmt.setString(4, notes);
             stmt.executeUpdate();
 
             confirmationLabel.setText("Workout logged!");
+            conn.close();
+        } catch (NumberFormatException e) {
+            confirmationLabel.setText("Duration must be a number.");
         } catch (SQLException e) {
-            confirmationLabel.setText("Error logging workout.");
+            confirmationLabel.setText("Error saving workout.");
             e.printStackTrace();
         }
     }
