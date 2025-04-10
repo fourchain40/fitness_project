@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/20"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="WorkoutController"
+            prefWidth="400" prefHeight="300">
+
+    <children>
+        <TextArea fx:id="workoutDetails"
+                  layoutX="50" layoutY="50"
+                  prefWidth="300" prefHeight="100"
+                  promptText="Enter your workout details here..." />
+
+        <Button text="Log Workout"
+                layoutX="50" layoutY="170"
+                onAction="#handleLogWorkout"/>
+
+        <Label fx:id="confirmationLabel"
+               layoutX="50" layoutY="220"
+               text=""/>
+    </children>
+
+</AnchorPane>
