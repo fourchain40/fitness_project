@@ -12,7 +12,7 @@ public class WorkoutController {
     @FXML
     private void handleLogWorkout() {
         String details = workoutDetails.getText();
-        try (Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/group29", "group29", "C1mbI9G3")) {
+        try (Connection conn = DriverManager.getConnection("jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
             String sql = "INSERT INTO workouts (user_id, workout_date, workout_details) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
