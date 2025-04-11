@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 
 import java.sql.*;
 
-public class MyProfileController {
+public class MemberProfileController {
     @FXML private Label title;
     @FXML private Label name;
     @FXML private Label gender;
@@ -65,7 +65,7 @@ public class MyProfileController {
     @FXML
     public void handleBack() throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenuMember.fxml"));
         Parent root = loader.load();
         Stage stage = (Stage) title.getScene().getWindow();
         stage.setScene(new Scene(root));

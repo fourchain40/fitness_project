@@ -7,28 +7,18 @@ import javafx.stage.Stage;
 
 
 
-public class MainMenuController {
+public class MainMenuTrainerController {
     @FXML private Label title;
 
     @FXML
     public void handleProfile() throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/myProfile.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/myProfileTrainer.fxml"));
         Parent root = loader.load();
         Stage stage = (Stage) title.getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.setTitle("My Profile");
         stage.show();
     }
-
-    @FXML
-    public void handleLog() throws Exception
-    {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/logWorkout.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) title.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Log Workout");
-        stage.show();
-    }
 }
+

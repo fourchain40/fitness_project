@@ -49,13 +49,32 @@ public class LoginController {
 
                         // Load the workout screen
                         //FXMLLoader loader = new FXMLLoader(getClass().getResource("/logWorkout.fxml"));
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenu.fxml"));
+                        if(role.equals("Member"))
+                        {FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenuMember.fxml"));
                         Parent root = loader.load();
                         Stage stage = (Stage) usernameField.getScene().getWindow();
                         stage.setScene(new Scene(root));
                         //stage.setTitle("Log Workout");
                         stage.setTitle("Main Menu");
-                        stage.show();
+                        stage.show();}
+                        else if(role.equals("Trainer"))
+                        {FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenuTrainer.fxml"));
+                            Parent root = loader.load();
+                            Stage stage = (Stage) usernameField.getScene().getWindow();
+                            stage.setScene(new Scene(root));
+                            //stage.setTitle("Log Workout");
+                            stage.setTitle("Main Menu");
+                            stage.show();}
+                        else if(role.equals("Administrator"))
+                        {FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenuAdmin.fxml"));
+                            Parent root = loader.load();
+                            Stage stage = (Stage) usernameField.getScene().getWindow();
+                            stage.setScene(new Scene(root));
+                            //stage.setTitle("Log Workout");
+                            stage.setTitle("Main Menu");
+                            stage.show();}
+
+
 
                         break;
                     }
