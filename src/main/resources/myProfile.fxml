@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="MyProfileController"
+            prefHeight="400.0" prefWidth="600.0">
+<children>
+    <Label fx:id="title" layoutX="100" layoutY="50" text="My Profile"/>
+    <Label fx:id="name" layoutX="100" layoutY="100"/>
+    <Label fx:id="gender" layoutX="100" layoutY="120"/>
+    <Label fx:id="date_of_birth" layoutX="100" layoutY="140"/>
+    <Label fx:id="height" layoutX="100" layoutY="160"/>
+    <Label fx:id="weight" layoutX="100" layoutY="180"/>
+    <Label fx:id="bio" layoutX="100" layoutY="200"/>
+    <Button text="Return to Menu" layoutX="100" layoutY="250" onAction="#handleBack"/>
+</children>
+
+</AnchorPane>

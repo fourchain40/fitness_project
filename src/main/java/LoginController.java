@@ -25,6 +25,11 @@ public class LoginController {
                 "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
 
             for (String role : roles) {
+                String role_id = "member_id";
+                if(role.equals("Trainer"))
+                    role_id = "trainer_id";
+                else if(role.equals("Administrator"))
+                    role_id = "admin_id";
                 String sql = "SELECT * FROM " + role + " WHERE email=? AND password=?";
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                     stmt.setString(1, user);
@@ -35,12 +40,21 @@ public class LoginController {
                         authenticated = true;
                         System.out.println("Login successful as " + role);
 
+                        //Set up Session with appropriate user id
+                        int id = rs.getInt(role_id);
+
+                        Session session = Session.getInstance();
+                        session.setUserID(id);
+                        session.setRole(role);
+
                         // Load the workout screen
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/logWorkout.fxml"));
+                        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/logWorkout.fxml"));
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenu.fxml"));
                         Parent root = loader.load();
                         Stage stage = (Stage) usernameField.getScene().getWindow();
                         stage.setScene(new Scene(root));
-                        stage.setTitle("Log Workout");
+                        //stage.setTitle("Log Workout");
+                        stage.setTitle("Main Menu");
                         stage.show();
 
                         break;
