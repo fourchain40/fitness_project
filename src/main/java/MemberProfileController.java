@@ -72,4 +72,15 @@ public class MemberProfileController {
         stage.setTitle("Main Menu");
         stage.show();
     }
+
+    @FXML
+    public void handleEdit() throws Exception
+    {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/editProfileMember.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Main Menu");
+        stage.show();
+    }
 }

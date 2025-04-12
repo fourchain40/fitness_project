@@ -18,7 +18,8 @@
     <Label fx:id="height" layoutX="100" layoutY="160"/>
     <Label fx:id="weight" layoutX="100" layoutY="180"/>
     <Label fx:id="bio" layoutX="100" layoutY="200"/>
-    <Button text="Return to Menu" layoutX="100" layoutY="250" onAction="#handleBack"/>
+    <Button text="Edit Profile" layoutX="100" layoutY="250" onAction="#handleEdit"/>
+    <Button text="Return to Menu" layoutX="100" layoutY="300" onAction="#handleBack"/>
 </children>
 
 </AnchorPane>

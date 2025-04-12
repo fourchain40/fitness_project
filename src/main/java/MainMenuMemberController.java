@@ -31,4 +31,18 @@ public class MainMenuMemberController {
         stage.setTitle("Log Workout");
         stage.show();
     }
+
+    @FXML
+    public void handleLogOut() throws Exception
+    {
+        Session session = Session.getInstance();
+        session.setUserID(0);
+        session.setRole("");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/login.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Gym Tracker Login");
+        stage.show();
+    }
 }
