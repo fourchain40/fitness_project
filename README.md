@@ -13,4 +13,8 @@ Run the project with:
 
 ./gradlew run
 
-When prompted to log in, use one of the accounts already present in the database. 
+When prompted to log in, use one of the accounts already present in the database. Use: 
+
+Email: alice@example.com
+
+Password: pass123
