@@ -10,6 +10,6 @@
     <children>
         <Label layoutX="50" layoutY="30" text="Workout Statistics" fx:id="title" style="-fx-font-size: 18px;"/>
         <TextArea fx:id="statsArea" layoutX="50" layoutY="70" prefWidth="500" prefHeight="250" editable="false"/>
-        <Button layoutX="50" layoutY="340" text="Back" onAction="#handleBack"/>
+        <Button layoutX="50" layoutY="340" text="Return to Menu" onAction="#handleBack"/>
     </children>
 </AnchorPane>

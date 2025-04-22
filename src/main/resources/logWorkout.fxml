@@ -28,5 +28,6 @@
         <Label fx:id="confirmationLabel"
                layoutX="50" layoutY="330"
                text=""/>
+        <Button layoutX="50" layoutY="340" text="Return to Menu" onAction="#handleBack"/>
     </children>
 </AnchorPane>

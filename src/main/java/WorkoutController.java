@@ -1,5 +1,10 @@
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
+
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -45,5 +50,15 @@ public class WorkoutController {
             confirmationLabel.setText("Error saving workout.");
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void handleBack() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenuMember.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) workoutDate.getScene().getWindow(); // or any other @FXML node
+        stage.setScene(new Scene(root));
+        stage.setTitle("Main Menu");
+        stage.show();
     }
 }
