@@ -33,6 +33,17 @@ public class MainMenuMemberController {
     }
 
     @FXML
+    public void handleChallenge() throws Exception
+    {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/challengeMenu.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Challenge Menu");
+        stage.show();
+    }
+
+    @FXML
     public void handleLogOut() throws Exception
     {
         Session session = Session.getInstance();
