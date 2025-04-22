@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="JoinGroupController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <Label fx:id="title" layoutX="90" layoutY="20" text="Join Existing Group"/>
+        <Label fx:id="group" layoutX="90" layoutY="60" text="Group Name:"/>
+        <ComboBox fx:id="groupComboBox" layoutX="190" layoutY="60" prefWidth="200"/>
+        <Button text="Join" layoutX="100" layoutY="150" onAction="#handleJoin"/>
+        <Button text="Cancel" layoutX="170" layoutY="150" onAction="#handleBack"/>
+    </children>
+
+</AnchorPane>

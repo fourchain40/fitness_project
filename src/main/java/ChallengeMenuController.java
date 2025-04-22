@@ -17,4 +17,26 @@ public class ChallengeMenuController {
         stage.setTitle("Main Menu");
         stage.show();
     }
+
+    @FXML
+    public void handleGroups() throws Exception
+    {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/myGroups.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("My Groups");
+        stage.show();
+    }
+
+    @FXML
+    public void handleNewChallenge() throws Exception
+    {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/createChallenge.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Create Challenge");
+        stage.show();
+    }
 }

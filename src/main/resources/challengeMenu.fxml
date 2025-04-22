@@ -11,8 +11,8 @@
             fx:controller="ChallengeMenuController"
             prefHeight="400.0" prefWidth="600.0">
     <Label fx:id="title" layoutX="100" layoutY="50" text="Challenge Menu"/>
-    <Button text="Create or join a workout group" layoutX="100" layoutY="100"/>
-    <Button text="Create a challenge for your workout group" layoutX="100" layoutY="150"/>
+    <Button text="Create or join a workout group" layoutX="100" layoutY="100" onAction="#handleGroups"/>
+    <Button text="Create a challenge for your workout group" layoutX="100" layoutY="150" onAction="#handleNewChallenge"/>
     <Button text="View my challenges" layoutX="100" layoutY="200"/>
     <Button text="Return to main menu" layoutX="100" layoutY="250" onAction="#handleBack"/>
 

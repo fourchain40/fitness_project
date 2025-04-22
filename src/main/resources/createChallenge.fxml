@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="CreateChallengeController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <Label fx:id="title" layoutX="90" layoutY="20" text="Create Challenge"/>
+        <Label fx:id="name" layoutX="90" layoutY="60" text="Challenge Name:"/>
+        <TextField fx:id="name_field" layoutX="190" layoutY="55"/>
+        <Label fx:id="group" layoutX="90" layoutY="100" text="Group Name:"/>
+        <ComboBox fx:id="groupComboBox" layoutX="190" layoutY="100" prefWidth="200"/>
+        <Label fx:id="start" layoutX="90" layoutY="140" text="Start Date:"/>
+        <DatePicker fx:id="start_date" layoutX="190" layoutY="140"/>
+        <Label fx:id="end" layoutX="90" layoutY="180" text="End Date:"/>
+        <DatePicker fx:id="end_date" layoutX="190" layoutY="180"/>
+        <Button text="Create challenge" layoutX="100" layoutY="250" onAction="#handleSubmit"/>
+        <Button text="Cancel" layoutX="170" layoutY="250" onAction="#handleBack"/>
+    </children>
+
+</AnchorPane>
