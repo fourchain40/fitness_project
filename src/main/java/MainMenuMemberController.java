@@ -56,4 +56,13 @@ public class MainMenuMemberController {
         stage.show();
     }
 
+    @FXML
+    public void handleHistory() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/workoutHistory.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Workout History");
+        stage.show();
+    }
 }
