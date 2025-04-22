@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 
 public class EditProfileMemberController {
@@ -18,101 +19,74 @@ public class EditProfileMemberController {
     @FXML private RadioButton female;
     @FXML private RadioButton male;
     @FXML private RadioButton other;
+
     @FXML
-    public void initialize()
-    {
+    public void initialize() {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
-            Session session = Session.getInstance();
-            String role = session.getRole();
-            String role_id = "member_id";
-            int id = session.getUserID();
-            if(role.equals("Trainer"))
-            {
-                role_id = "trainer_id";
-            }
-            else if(role.equals("Administrator"))
-            {
-                role_id = "admin_id";
-            }
-            String sql = "SELECT * FROM " + role + " WHERE " + role_id + "=?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, id);
-                ResultSet rs = stmt.executeQuery();
+        Member member;
 
-                if (rs.next()) {
-                    lname_field.setText(rs.getString("last_name"));
-                    fname_field.setText(rs.getString("first_name"));
-                    height_field.setText(rs.getString("height"));
-                    weight_field.setText(rs.getString("weight"));
-                    bio_field.setText(rs.getString("bio"));
-                    ToggleGroup gender = new ToggleGroup();
-                    female.setToggleGroup(gender);
-                    male.setToggleGroup(gender);
-                    other.setToggleGroup(gender);
-                    if(rs.getString("gender").equals("M"))
-                    {
-                        male.setSelected(true);
-                    }
-                    else if(rs.getString("gender").equals("F"))
-                    {
-                        female.setSelected(true);
-                    }
-                    else{
-                        other.setSelected(true);
-                    }
-                    dob_picker.setValue(rs.getTimestamp("date_of_birth").toLocalDateTime().toLocalDate());
-                }
-            }
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+        try {
+            databaseDriver.connect();
+            member = databaseDriver.getMemberByID(session.getUserID());
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
+        lname_field.setText(member.getLast_name());
+        fname_field.setText(member.getFirst_name());
+        height_field.setText(String.valueOf(member.getHeight()));
+        weight_field.setText(String.valueOf(member.getWeight()));
+        bio_field.setText(member.getBio());
+        ToggleGroup gender = new ToggleGroup();
+        female.setToggleGroup(gender);
+        male.setToggleGroup(gender);
+        other.setToggleGroup(gender);
+        if (member.getGender().equals("M")) {
+            male.setSelected(true);
+        } else if (member.getGender().equals("F")) {
+            female.setSelected(true);
+        } else {
+            other.setSelected(true);
+        }
+        dob_picker.setValue(member.getDate_of_birth());
     }
 
     @FXML
-    public void handleEdit() throws Exception
-    {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
-            Session session = Session.getInstance();
-            String role = session.getRole();
-            String role_id = "member_id";
-            int id = session.getUserID();
-            if(role.equals("Trainer"))
-            {
-                role_id = "trainer_id";
-            }
-            else if(role.equals("Administrator"))
-            {
-                role_id = "admin_id";
-            }
-            String sql = "UPDATE " + role + " SET first_name=?, last_name=?, gender=?, date_of_birth=?, height=?, weight=?, bio=?" + " WHERE " + role_id + "=?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(8, id);
-                stmt.setString(1, fname_field.getText());
-                stmt.setString(2, lname_field.getText());
-                stmt.setDate(4, Date.valueOf(dob_picker.getValue()));
-                stmt.setInt(5, Integer.parseInt(height_field.getText()));
-                stmt.setInt(6, Integer.parseInt(weight_field.getText()));
-                stmt.setString(7, bio_field.getText());
+    public void handleEdit() throws Exception {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
 
-                String gender_char = "O";
-                if (female.isSelected())
-                    gender_char = "F";
-                else if (male.isSelected())
-                    gender_char = "M";
-                stmt.setString(3, gender_char);
-                stmt.executeUpdate();
-                handleBack();
-            }
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+        String gender_char = "O";
+        if (female.isSelected())
+            gender_char = "F";
+        else if (male.isSelected())
+            gender_char = "M";
+
+        Member member = new Member(
+                session.getUserID(),
+                fname_field.getText(),
+                lname_field.getText(),
+                null,
+                null,
+                gender_char,
+                dob_picker.getValue(),
+                Integer.parseInt(height_field.getText()),
+                Integer.parseInt(weight_field.getText()),
+                bio_field.getText()
+        );
+
+        try {
+            databaseDriver.connect();
+            databaseDriver.updateMember(member);
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
+        handleBack();
     }
 
     @FXML

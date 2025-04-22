@@ -7,32 +7,32 @@ public class Member{
     private String email;
     private String password;
     private String gender;
-    private LocalDate date_of_bith;
+    private LocalDate date_of_birth;
     private int height;
     private int weight;
     private String bio;
 
-    public Member(int member_id, String first_name, String last_name, String email, String password, String gender, LocalDate date_of_bith, int height, int weight, String bio) {
+    public Member(int member_id, String first_name, String last_name, String email, String password, String gender, LocalDate date_of_birth, int height, int weight, String bio) {
         this.member_id = member_id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
         this.password = password;
         this.gender = gender;
-        this.date_of_bith = date_of_bith;
+        this.date_of_birth = date_of_birth;
         this.height = height;
         this.weight = weight;
         this.bio = bio;
     }
 
-    public Member(String first_name, String last_name, String email, String password, String gender, LocalDate date_of_bith, int height, int weight, String bio) {
+    public Member(String first_name, String last_name, String email, String password, String gender, LocalDate date_of_birth, int height, int weight, String bio) {
         this.member_id = 0;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
         this.password = password;
         this.gender = gender;
-        this.date_of_bith = date_of_bith;
+        this.date_of_birth = date_of_birth;
         this.height = height;
         this.weight = weight;
         this.bio = bio;
@@ -86,12 +86,12 @@ public class Member{
         this.gender = gender;
     }
 
-    public LocalDate getDate_of_bith() {
-        return date_of_bith;
+    public LocalDate getDate_of_birth() {
+        return date_of_birth;
     }
 
-    public void setDate_of_bith(LocalDate date_of_bith) {
-        this.date_of_bith = date_of_bith;
+    public void setDate_of_birth(LocalDate date_of_birth) {
+        this.date_of_birth = date_of_birth;
     }
 
     public int getHeight() {
@@ -145,7 +145,7 @@ public class Member{
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", gender='" + gender + '\'' +
-                ", date_of_bith=" + date_of_bith +
+                ", date_of_birth=" + date_of_birth +
                 ", height=" + height +
                 ", weight=" + weight +
                 ", bio='" + bio + '\'' +

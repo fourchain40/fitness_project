@@ -24,6 +24,9 @@ public class Main extends Application {
         postgresProps.setProperty("password", "C1mbI9G3");
         DatabaseDriver databaseDriver = new DatabaseDriver(postgresURL, postgresProps);
 
+        Session session = Session.getInstance();
+        session.setDatabaseDriver(databaseDriver);
+
         Parent root = FXMLLoader.load(getClass().getResource("/login.fxml"));
         stage.setTitle("Gym Tracker Login");
         stage.setScene(new Scene(root));

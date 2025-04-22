@@ -14,37 +14,20 @@ public class AdminProfileController {
     @FXML
     public void initialize()
     {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
-            Session session = Session.getInstance();
-            String role = session.getRole();
-            String role_id = "member_id";
-            int id = session.getUserID();
-            if(role.equals("Trainer"))
-            {
-                role_id = "trainer_id";
-            }
-            else if(role.equals("Administrator"))
-            {
-                role_id = "admin_id";
-            }
-            String sql = "SELECT * FROM " + role + " WHERE " + role_id + "=?";
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, id);
-                ResultSet rs = stmt.executeQuery();
+        Administrator admin;
 
-                if (rs.next()) {
-                    String first_name = rs.getString("first_name");
-                    String last_name = rs.getString("last_name");
-                    name.setText("Name: " + first_name + " " + last_name);
-                }
-            }
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
+        try {
+            databaseDriver.connect();
+            admin = databaseDriver.getAdminByID(session.getUserID());
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
+        name.setText("Name: " + admin.getFirst_name() + " " + admin.getLast_name());
     }
     @FXML
     public void handleBack() throws Exception
