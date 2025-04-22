@@ -17,6 +17,7 @@
                 <TableColumn fx:id="durationCol" text="Duration (min)" prefWidth="120"/>
                 <TableColumn fx:id="notesCol" text="Notes" prefWidth="200"/>
                 <TableColumn fx:id="planCol" text="Plan Name" prefWidth="120"/>
+                <TableColumn fx:id="actionCol" text="Actions" prefWidth="120"/>
             </columns>
         </TableView>
         <Button layoutX="20" layoutY="350" text="Back" onAction="#handleBack"/>

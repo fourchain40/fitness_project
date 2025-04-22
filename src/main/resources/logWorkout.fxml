@@ -10,23 +10,25 @@
 
     <children>
         <Label layoutX="50" layoutY="30" text="Workout Date"/>
+
         <DatePicker fx:id="workoutDate" layoutX="150" layoutY="25"/>
 
         <Label layoutX="50" layoutY="80" text="Duration (min)"/>
         <TextField fx:id="durationField" layoutX="150" layoutY="75" promptText="e.g. 45"/>
 
-        <Label layoutX="50" layoutY="130" text="Notes"/>
+        <Label layoutX="50" layoutY="130" text="Workout Plan:"/>
+        <ComboBox fx:id="planComboBox" layoutX="150" layoutY="125" prefWidth="200"/>
+
         <TextArea fx:id="workoutDetails"
                   layoutX="50" layoutY="160"
                   prefWidth="300" prefHeight="100"
                   promptText="Workout details..."/>
-
         <Button text="Log Workout"
                 layoutX="150" layoutY="280"
                 onAction="#handleLogWorkout"/>
 
         <Label fx:id="confirmationLabel"
-               layoutX="50" layoutY="330"
+               layoutX="50" layoutY="300"
                text=""/>
         <Button layoutX="50" layoutY="340" text="Return to Menu" onAction="#handleBack"/>
     </children>

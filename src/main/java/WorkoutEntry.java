@@ -17,4 +17,16 @@ public class WorkoutEntry {
     public IntegerProperty durationProperty() { return duration; }
     public StringProperty notesProperty() { return notes; }
     public StringProperty planNameProperty() { return planName; }
+
+    public String getWorkoutDate() {
+        return workoutDate.get();
+    }
+
+    public int getDuration() {
+        return duration.get();
+    }
+
+    public String getNotes() {
+        return notes.get();
+    }
 }

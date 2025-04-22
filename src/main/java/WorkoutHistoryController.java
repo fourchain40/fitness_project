@@ -16,6 +16,9 @@ public class WorkoutHistoryController {
     @FXML private TableColumn<WorkoutEntry, String> notesCol;
     @FXML private TableColumn<WorkoutEntry, String> planCol;
 
+    @FXML private TableColumn<WorkoutEntry, Void> actionCol;
+
+
     @FXML
     public void initialize() {
         ObservableList<WorkoutEntry> data = FXCollections.observableArrayList();
@@ -55,7 +58,26 @@ public class WorkoutHistoryController {
         durationCol.setCellValueFactory(cell -> cell.getValue().durationProperty().asObject());
         notesCol.setCellValueFactory(cell -> cell.getValue().notesProperty());
         planCol.setCellValueFactory(cell -> cell.getValue().planNameProperty());
+        actionCol.setCellFactory(col -> new TableCell<>() {
+            private final Button deleteBtn = new Button("Delete");
 
+            {
+                deleteBtn.setOnAction(e -> {
+                    WorkoutEntry entry = getTableView().getItems().get(getIndex());
+                    handleDelete(entry);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(deleteBtn);
+                }
+            }
+        });
         workoutTable.setItems(data);
     }
 
@@ -68,4 +90,26 @@ public class WorkoutHistoryController {
         stage.setTitle("Main Menu");
         stage.show();
     }
+    private void handleDelete(WorkoutEntry entry) {
+        try (Connection conn = DriverManager.getConnection(
+                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
+
+            String sql = """
+            DELETE FROM WorkoutLog
+            WHERE member_id = ? AND workout_date = ? AND duration_minutes = ? AND notes = ?
+            """;
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, Session.getInstance().getUserID());
+            stmt.setDate(2, Date.valueOf(entry.getWorkoutDate()));
+            stmt.setInt(3, entry.getDuration());
+            stmt.setString(4, entry.getNotes());
+            stmt.executeUpdate();
+
+            workoutTable.getItems().remove(entry);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
