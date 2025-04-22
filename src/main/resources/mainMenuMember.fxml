@@ -14,6 +14,7 @@
         <Label fx:id="title" layoutX="100" layoutY="50" text="Main Menu"/>
         <Button text="View Profile" layoutX="100" layoutY="100" onAction="#handleProfile"/>
         <Button text="Log a Workout" layoutX="100" layoutY="150" onAction="#handleLog"/>
+        <Button text="Workout Statistics" layoutX="100" layoutY="250" onAction="#handleStats"/>
         <Button text="Log Out" layoutX="100" layoutY="200" onAction="#handleLogOut"/>
     </children>
 </AnchorPane>
