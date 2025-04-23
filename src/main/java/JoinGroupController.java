@@ -45,11 +45,11 @@ public class JoinGroupController {
     @FXML
     public void handleBack() throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/myGroups.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainMenuMember.fxml"));
         Parent root = loader.load();
         Stage stage = (Stage) title.getScene().getWindow();
         stage.setScene(new Scene(root));
-        stage.setTitle("My Groups");
+        stage.setTitle("Main Menu");
         stage.show();
     }
 
