@@ -81,6 +81,7 @@ public class EditProfileMemberController {
         try {
             databaseDriver.connect();
             databaseDriver.updateMember(member);
+            databaseDriver.commit();
             databaseDriver.disconnect();
         } catch (SQLException e) {
             throw new RuntimeException(e);

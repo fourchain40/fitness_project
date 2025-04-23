@@ -4,14 +4,26 @@ public class Workout {
     private int log_id;
     private int member_id;
     private int plan_id;
+    private String plan_name;
     private LocalDate workout_date;
     private int duration_minutes;
     private String notes;
+
+    public Workout(int log_id, int member_id, int plan_id, String plan_name, LocalDate workout_date, int duration_minutes, String notes) {
+        this.log_id = log_id;
+        this.member_id = member_id;
+        this.plan_id = plan_id;
+        this.plan_name = plan_name;
+        this.workout_date = workout_date;
+        this.duration_minutes = duration_minutes;
+        this.notes = notes;
+    }
 
     public Workout(int log_id, int member_id, int plan_id, LocalDate workout_date, int duration_minutes, String notes) {
         this.log_id = log_id;
         this.member_id = member_id;
         this.plan_id = plan_id;
+        this.plan_name = null;
         this.workout_date = workout_date;
         this.duration_minutes = duration_minutes;
         this.notes = notes;
@@ -21,6 +33,17 @@ public class Workout {
         this.log_id = 0;
         this.member_id = member_id;
         this.plan_id = plan_id;
+        this.plan_name = null;
+        this.workout_date = workout_date;
+        this.duration_minutes = duration_minutes;
+        this.notes = notes;
+    }
+
+    public Workout(int member_id, LocalDate workout_date, int duration_minutes, String notes) {
+        this.log_id = 0;
+        this.member_id = member_id;
+        this.plan_id = 0;
+        this.plan_name = null;
         this.workout_date = workout_date;
         this.duration_minutes = duration_minutes;
         this.notes = notes;
@@ -48,6 +71,14 @@ public class Workout {
 
     public void setPlan_id(int plan_id) {
         this.plan_id = plan_id;
+    }
+
+    public String getPlan_name() {
+        return plan_name;
+    }
+
+    public void setPlan_name(String plan_name) {
+        this.plan_name = plan_name;
     }
 
     public LocalDate getWorkout_date() {

@@ -5,7 +5,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
+import java.util.Optional;
 
 public class WorkoutStatsController {
     @FXML private Label title;
@@ -13,39 +15,28 @@ public class WorkoutStatsController {
 
     @FXML
     public void initialize() {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
 
-            int memberId = Session.getInstance().getUserID();
-            String sql = """
-                SELECT COUNT(*) AS total_workouts,
-                       SUM(duration_minutes) AS total_minutes,
-                       AVG(duration_minutes) AS avg_duration
-                FROM WorkoutLog
-                WHERE member_id = ?
-            """;
+        Optional<MemberStats> stats = Optional.empty();
 
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, memberId);
-                ResultSet rs = stmt.executeQuery();
-
-                if (rs.next()) {
-                    int total = rs.getInt("total_workouts");
-                    int totalMinutes = rs.getInt("total_minutes");
-                    double avg = rs.getDouble("avg_duration");
-
-                    statsArea.setText(String.format("""
-                        Total Workouts: %d
-                        Total Time Spent: %d minutes
-                        Average Duration: %.2f minutes
-                    """, total, totalMinutes, avg));
-                } else {
-                    statsArea.setText("No workout data found.");
-                }
-            }
+        try {
+            databaseDriver.connect();
+            stats = databaseDriver.getMemberStatsByID(session.getUserID());
+            databaseDriver.disconnect();
         } catch (SQLException e) {
             statsArea.setText("Error loading stats.");
             e.printStackTrace();
+        }
+
+        if (stats.isPresent()) {
+            statsArea.setText(String.format("""
+                Total Workouts: %d
+                Total Time Spent: %d minutes
+                Average Duration: %.2f minutes
+                """, stats.get().getTotal_workouts(), stats.get().getTotal_minutes(), stats.get().getAvg_duration()));
+        } else {
+            statsArea.setText("No workout data found.");
         }
     }
 

@@ -5,9 +5,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WorkoutController {
@@ -24,30 +27,30 @@ public class WorkoutController {
 
     @FXML
     public void initialize() {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
 
-            int memberId = Session.getInstance().getUserID();
-            String sql = "SELECT plan_id, plan_name FROM WorkoutPlan WHERE member_id = ?";
+        List<Plan> plans = new ArrayList<>();
 
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, memberId);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                int planId = rs.getInt("plan_id");
-                String planName = rs.getString("plan_name");
-                planComboBox.getItems().add(planName);
-                planMap.put(planName, planId);
-            }
-
-            // Optional: add blank option for no plan
-            planComboBox.getItems().add(0, "None");
-
+        try {
+            databaseDriver.connect();
+            plans = databaseDriver.getPlansByMemberID(session.getUserID());
+            databaseDriver.disconnect();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
+        for (Plan plan : plans) {
+            String planName = plan.getPlan_name();
+            int planId = plan.getPlan_id();
+            planComboBox.getItems().add(planName);
+            planMap.put(planName, planId);
+        }
+
+        // Optional: add blank option for no plan
+        planComboBox.getItems().add(0, "None");
     }
+
     @FXML
     private void handleLogWorkout() {
         String notes = workoutDetails.getText();
@@ -59,37 +62,41 @@ public class WorkoutController {
             return;
         }
 
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        int duration = 0;
+
         try {
-            int duration = Integer.parseInt(durationText);
-
-            Connection conn = DriverManager.getConnection(
-                    "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3");
-
-            String sql = "INSERT INTO WorkoutLog (member_id, plan_id, workout_date, duration_minutes, notes) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, memberId);
-
-            // Get selected plan ID or set NULL
-            String selectedPlan = planComboBox.getValue();
-            if (selectedPlan == null || selectedPlan.equals("None")) {
-                stmt.setNull(2, Types.INTEGER);
-            } else {
-                stmt.setInt(2, planMap.get(selectedPlan));
-            }
-
-            stmt.setDate(3, Date.valueOf(date));
-            stmt.setInt(4, duration);
-            stmt.setString(5, notes);
-            stmt.executeUpdate();
-
-            confirmationLabel.setText("Workout logged!");
-            conn.close();
+            duration = Integer.parseInt(durationText);
         } catch (NumberFormatException e) {
             confirmationLabel.setText("Duration must be a number.");
+        }
+
+        Workout workout = new Workout(
+                session.getUserID(),
+                0,
+                date,
+                duration,
+                notes
+        );
+
+        String selectedPlan = planComboBox.getValue();
+        if (selectedPlan != null && !selectedPlan.equals("None")) {
+           workout.setPlan_id(planMap.get(selectedPlan));
+        }
+
+        try {
+            databaseDriver.connect();
+            databaseDriver.logWorkout(workout);
+            databaseDriver.commit();
+            databaseDriver.disconnect();
         } catch (SQLException e) {
             confirmationLabel.setText("Error saving workout.");
             e.printStackTrace();
         }
+
+        confirmationLabel.setText("Workout logged!");
     }
 
     @FXML

@@ -48,6 +48,8 @@ public class DatabaseDriver{
         connection.close();
     }
 
+    // Member operations
+
     public void addMember(Member member) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
@@ -191,6 +193,8 @@ public class DatabaseDriver{
         return new Member(member_id, first_name, last_name, email, password, gender, date_of_birth, height, weight, bio);
     }
 
+    // Trainer operations
+
     public Trainer getTrainerByID(int trainer_id) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
@@ -236,6 +240,8 @@ public class DatabaseDriver{
         return new Trainer(trainer_id, first_name, last_name, date_of_birth, gender, email, password, years_of_experience, bio, specialization);
     }
 
+    // Administrator operations
+
     public Administrator getAdminByID(int admin_id) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
@@ -274,6 +280,158 @@ public class DatabaseDriver{
         String email = resultSet.getString("email");
         String password = resultSet.getString("password");
         return new Administrator(admin_id, first_name, last_name, email, password);
+    }
+
+    // Plan operations
+
+    public List<Plan> getPlansByMemberID(int member_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM workoutplan WHERE member_id = ?");
+        preparedStatement.setInt(1, member_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ArrayList<Plan> plans = new ArrayList<>();
+        while(resultSet.next()) {
+            Plan plan = buildPlan(resultSet);
+            plans.add(plan);
+        }
+        preparedStatement.close();
+        return plans;
+    }
+
+    private Plan buildPlan(ResultSet resultSet) throws SQLException {
+        int plan_id = resultSet.getInt("plan_id");
+        int member_id = resultSet.getInt("member_id");
+        int trainer_id = resultSet.getInt("trainer_id");
+        String plan_name = resultSet.getString("plan_name");
+        LocalDate start_date = resultSet.getObject("start_date", LocalDate.class);
+        LocalDate end_date = resultSet.getObject("end_date", LocalDate.class);
+        String description = resultSet.getString("description");
+        return new Plan(plan_id, member_id, trainer_id, plan_name, start_date, end_date, description);
+    }
+
+    // Workout operations
+
+    public void logWorkout(Workout workout) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        INSERT INTO workoutlog(member_id, plan_id, workout_date, duration_minutes, notes)
+                        VALUES (?, ?, ?, ?, ?)
+                        """
+            );
+            preparedStatement.setInt(1, workout.getMember_id());
+            if (workout.getPlan_id() == 0) {
+                preparedStatement.setNull(2, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(2, workout.getPlan_id());
+            }
+            preparedStatement.setObject(3, workout.getWorkout_date());
+            preparedStatement.setInt(4, workout.getDuration_minutes());
+            preparedStatement.setString(5, workout.getNotes());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
+    public List<Workout> getWorkoutHistoryByID(int member_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                SELECT *
+                FROM WorkoutLog wl
+                LEFT JOIN WorkoutPlan wp ON wl.plan_id = wp.plan_id
+                WHERE wl.member_id = ?
+                ORDER BY wl.workout_date DESC
+            """
+        );
+        preparedStatement.setInt(1, member_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<Workout> workouts = new ArrayList<>();
+        while(resultSet.next()) {
+            Workout workout = buildWorkout(resultSet);
+            workouts.add(workout);
+        }
+        preparedStatement.close();
+        return workouts;
+    }
+
+    public void deleteWorkoutByID(int log_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                    DELETE FROM workoutlog
+                    WHERE log_id = ?
+                    """
+            );
+            preparedStatement.setInt(1, log_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
+    private Workout buildWorkout(ResultSet resultSet) throws SQLException {
+        int log_id = resultSet.getInt("log_id");
+        int member_id = resultSet.getInt("member_id");
+        int plan_id = resultSet.getInt("plan_id");
+        String plan_name = null;
+        if (resultSet.getMetaData().getColumnCount() > 6) {
+            plan_name = resultSet.getString("plan_name");
+        }
+        LocalDate workout_date = resultSet.getObject("workout_date", LocalDate.class);
+        int duration_minutes = resultSet.getInt("duration_minutes");
+        String notes = resultSet.getString("notes");
+        return new Workout(log_id, member_id, plan_id, plan_name, workout_date, duration_minutes, notes);
+    }
+
+    // MemberStats operations
+
+    public Optional<MemberStats> getMemberStatsByID(int member_id) throws SQLException{
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                        """
+                        SELECT COUNT(*) AS total_workouts,
+                        SUM(duration_minutes) AS total_minutes, 
+                        AVG(duration_minutes) AS avg_duration
+                        FROM workoutlog
+                        WHERE member_id = ?
+                        """
+        );
+        preparedStatement.setInt(1, member_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (isEmpty(resultSet)) {
+            preparedStatement.close();
+            return Optional.empty();
+        }
+        resultSet.next();
+        MemberStats stats = buildMemberStats(resultSet);
+        stats.setMember_id(member_id);
+        preparedStatement.close();
+        return Optional.of(stats);
+    }
+
+    private MemberStats buildMemberStats(ResultSet resultSet) throws SQLException {
+        int total_workouts = resultSet.getInt("total_workouts");
+        int total_minutes = resultSet.getInt("total_minutes");
+        double avg_duration = resultSet.getDouble("avg_duration");
+        return new MemberStats(total_workouts, total_minutes, avg_duration);
     }
 
     private static boolean isEmpty(ResultSet resultSet) throws SQLException {

@@ -1,3 +1,5 @@
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,63 +10,47 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorkoutHistoryController {
-    @FXML private TableView<WorkoutEntry> workoutTable;
-    @FXML private TableColumn<WorkoutEntry, String> dateCol;
-    @FXML private TableColumn<WorkoutEntry, Integer> durationCol;
-    @FXML private TableColumn<WorkoutEntry, String> notesCol;
-    @FXML private TableColumn<WorkoutEntry, String> planCol;
+    @FXML private TableView<Workout> workoutTable;
+    @FXML private TableColumn<Workout, String> dateCol;
+    @FXML private TableColumn<Workout, String> durationCol;
+    @FXML private TableColumn<Workout, String> notesCol;
+    @FXML private TableColumn<Workout, String> planCol;
 
-    @FXML private TableColumn<WorkoutEntry, Void> actionCol;
+    @FXML private TableColumn<Workout, Void> actionCol;
 
 
     @FXML
     public void initialize() {
-        ObservableList<WorkoutEntry> data = FXCollections.observableArrayList();
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
 
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
+        List<Workout> workouts = new ArrayList<>();
 
-            int memberId = Session.getInstance().getUserID();
-
-            String sql = """
-                SELECT wl.workout_date, wl.duration_minutes, wl.notes,
-                       wp.plan_name
-                FROM WorkoutLog wl
-                LEFT JOIN WorkoutPlan wp ON wl.plan_id = wp.plan_id
-                WHERE wl.member_id = ?
-                ORDER BY wl.workout_date DESC
-            """;
-
-            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, memberId);
-                ResultSet rs = stmt.executeQuery();
-
-                while (rs.next()) {
-                    data.add(new WorkoutEntry(
-                            rs.getDate("workout_date").toString(),
-                            rs.getInt("duration_minutes"),
-                            rs.getString("notes"),
-                            rs.getString("plan_name")
-                    ));
-                }
-            }
+        try {
+            databaseDriver.connect();
+            workouts = databaseDriver.getWorkoutHistoryByID(session.getUserID());
+            databaseDriver.disconnect();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
-        dateCol.setCellValueFactory(cell -> cell.getValue().workoutDateProperty());
-        durationCol.setCellValueFactory(cell -> cell.getValue().durationProperty().asObject());
-        notesCol.setCellValueFactory(cell -> cell.getValue().notesProperty());
-        planCol.setCellValueFactory(cell -> cell.getValue().planNameProperty());
+        ObservableList<Workout> data = FXCollections.observableArrayList(workouts);
+
+        dateCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getWorkout_date().toString()));
+        durationCol.setCellValueFactory(cell -> new SimpleStringProperty(String.valueOf(cell.getValue().getDuration_minutes())));
+        notesCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getNotes()));
+        planCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getPlan_name()));
         actionCol.setCellFactory(col -> new TableCell<>() {
             private final Button deleteBtn = new Button("Delete");
 
             {
                 deleteBtn.setOnAction(e -> {
-                    WorkoutEntry entry = getTableView().getItems().get(getIndex());
-                    handleDelete(entry);
+                    Workout workout = getTableView().getItems().get(getIndex());
+                    handleDelete(workout);
                 });
             }
 
@@ -90,26 +76,19 @@ public class WorkoutHistoryController {
         stage.setTitle("Main Menu");
         stage.show();
     }
-    private void handleDelete(WorkoutEntry entry) {
-        try (Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
+    private void handleDelete(Workout workout) {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
 
-            String sql = """
-            DELETE FROM WorkoutLog
-            WHERE member_id = ? AND workout_date = ? AND duration_minutes = ? AND notes = ?
-            """;
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, Session.getInstance().getUserID());
-            stmt.setDate(2, Date.valueOf(entry.getWorkoutDate()));
-            stmt.setInt(3, entry.getDuration());
-            stmt.setString(4, entry.getNotes());
-            stmt.executeUpdate();
-
-            workoutTable.getItems().remove(entry);
-
+        try {
+            databaseDriver.connect();
+            databaseDriver.deleteWorkoutByID(workout.getLog_id());
+            databaseDriver.commit();
+            databaseDriver.disconnect();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-    }
 
+        workoutTable.getItems().remove(workout);
+    }
 }
