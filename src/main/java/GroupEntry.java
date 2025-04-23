@@ -1,12 +1,12 @@
 import javafx.beans.property.*;
-import java.util.ArrayList;
+import java.util.List;
 
 public class GroupEntry {
     private final StringProperty name;
     private final StringProperty members;
     private final StringProperty challenges;
 
-    public GroupEntry(String name, ArrayList<String> members, ArrayList<String> challenges) {
+    public GroupEntry(String name, List<String> members, List<String> challenges) {
         this.name = new SimpleStringProperty(name);
         String member_list = "";
         for(int i=0; i<members.size(); i++){

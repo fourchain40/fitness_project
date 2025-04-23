@@ -4,11 +4,19 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateGroupController {
     @FXML
     public Label title;
+    @FXML
+    public TextField name_field;
     public CheckBox join_group;
 
     @FXML
@@ -18,9 +26,29 @@ public class CreateGroupController {
 
     @FXML
     public void handleCreate() throws Exception {
-        //actual code to handle adding a group
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        Group group = new Group(0, name_field.getText(), session.getUserID(), LocalDate.now(), new ArrayList<String>(), new ArrayList<String>());
+        try {
+            databaseDriver.connect();
+            databaseDriver.addGroup(group);
+            group = databaseDriver.getGroupByName(name_field.getText());
+            if(join_group.isSelected()) {
+                List<Member> members = new ArrayList<Member>();
+                Member m = new Member();
+                m.setMember_id(session.getUserID());
+                members.add(m);
+                databaseDriver.addMembersToGroup(group, members);
+            }
+            databaseDriver.commit();
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         handleBack();
     }
+
     @FXML
     public void handleBack() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/myGroups.fxml"));
