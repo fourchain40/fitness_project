@@ -45,6 +45,13 @@ public class CreateTrainerController {
             return;
         }
 
+        if (password_field.getText().isEmpty() || email_field.getText().isEmpty() || fname_field.getText().isEmpty()
+                || lname_field.getText().isEmpty() || dob_picker.getValue() == null || bio_field.getText().isEmpty()
+                || spec_field.getText().isEmpty() || exp_field.getText().isEmpty()) {
+            errorLabel.setText("Please fill out all fields!");
+            return;
+        }
+
         String gender_char = "O";
         if (female.isSelected())
             gender_char = "F";
