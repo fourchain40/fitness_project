@@ -434,6 +434,105 @@ public class DatabaseDriver{
         return new MemberStats(total_workouts, total_minutes, avg_duration);
     }
 
+    // Group operations
+
+    public void addGroup(Group group) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        INSERT INTO fitnessgroup (group_name, created_date, created_by)
+                        VALUES (?, ?, ?)
+                        """
+            );
+            preparedStatement.setString(1, group.getName());
+            preparedStatement.setObject(2, group.getCreatedDate());
+            preparedStatement.setInt(3, group.getCreatedBy());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
+    public void addMembersToGroup(Group group, List<Member> members) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        for (Member member : members) {
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        """
+                            INSERT INTO groupmembership (group_id, member_id)
+                            VALUES (?, ?)
+                            """
+                );
+                preparedStatement.setInt(1, group.getId());
+                preparedStatement.setInt(2, member.getMember_id());
+                preparedStatement.executeUpdate();
+                preparedStatement.close();
+            } catch (SQLException e) {
+                rollback();
+                throw e;
+            }
+        }
+    }
+
+    public List<Group> getGroupsByMemberID(int member_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                    SELECT *
+                    FROM fitnessgroup
+                    WHERE group_id IN (SELECT DISTINCT group_id FROM groupmembership WHERE member_id = ?)
+                    """
+        );
+        preparedStatement.setInt(1, member_id);
+        List<Group> groups = new ArrayList<>();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            Group group = buildGroup(resultSet);
+            groups.add(group);
+        }
+        preparedStatement.close();
+        return groups;
+    }
+
+    public List<Member> getMembersInGroup(int group_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                    SELECT *
+                    FROM member
+                    WHERE member_id IN (SELECT DISTINCT member_id FROM groupmembership WHERE group_id = ?)
+                    """
+        );
+        preparedStatement.setInt(1, group_id);
+        List<Member> members = new ArrayList<>();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            Member member = buildMember(resultSet);
+            members.add(member);
+        }
+        preparedStatement.close();
+        return members;
+    }
+
+    private Group buildGroup(ResultSet resultSet) throws SQLException {
+        int group_id = resultSet.getInt("group_id");
+        String group_name = resultSet.getString("group_name");
+        LocalDate created_date = resultSet.getObject("created_date", LocalDate.class);
+        int created_by = resultSet.getInt("created_by");
+        return new Group(group_id, group_name, created_by, created_date, null, null);
+    }
+
     private static boolean isEmpty(ResultSet resultSet) throws SQLException {
         return !resultSet.isBeforeFirst() && resultSet.getRow() == 0;
     }
