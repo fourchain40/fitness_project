@@ -65,7 +65,7 @@ public class CreateProfileController {
         try {
             databaseDriver.connect();
             databaseDriver.addMember(member);
-            System.out.println(databaseDriver.getAllMembers());
+            databaseDriver.commit();
             databaseDriver.disconnect();
         } catch (SQLException e) {
             throw new RuntimeException(e);
