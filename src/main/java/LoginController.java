@@ -72,7 +72,17 @@ public class LoginController {
         Parent root = loader.load();
         Stage stage = (Stage) statusLabel.getScene().getWindow();
         stage.setScene(new Scene(root));
-        stage.setTitle("Create Profile");
+        stage.setTitle("Create Member Profile");
+        stage.show();
+    }
+
+    @FXML
+    private void handleCreateTrainerAccount() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/createTrainer.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) statusLabel.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Create Trainer Profile");
         stage.show();
     }
 }

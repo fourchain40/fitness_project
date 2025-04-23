@@ -7,23 +7,24 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.w3c.dom.Text;
 
 import java.sql.SQLException;
 
-public class CreateProfileController {
+public class CreateTrainerController {
     @FXML private Label title;
     @FXML private Label errorLabel;
     @FXML private TextField fname_field;
     @FXML private TextField lname_field;
     @FXML private DatePicker dob_picker;
     @FXML private TextField bio_field;
-    @FXML private TextField height_field;
-    @FXML private TextField weight_field;
     @FXML private RadioButton female;
     @FXML private RadioButton male;
     @FXML private RadioButton other;
     @FXML private TextField email_field;
     @FXML private TextField password_field;
+    @FXML private TextField spec_field;
+    @FXML private TextField exp_field;
 
     @FXML
     private void handleCreate() throws Exception {
@@ -33,7 +34,7 @@ public class CreateProfileController {
         Boolean isEmailAvailable;
         try {
             databaseDriver.connect();
-            isEmailAvailable = databaseDriver.isMemberEmailAvailable(email_field.getText());
+            isEmailAvailable = databaseDriver.isTrainerEmailAvailable(email_field.getText());
             databaseDriver.disconnect();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -46,7 +47,7 @@ public class CreateProfileController {
 
         if (password_field.getText().isEmpty() || email_field.getText().isEmpty() || fname_field.getText().isEmpty()
                 || lname_field.getText().isEmpty() || dob_picker.getValue() == null || bio_field.getText().isEmpty()
-                || height_field.getText().isEmpty() || weight_field.getText().isEmpty()) {
+                || spec_field.getText().isEmpty() || exp_field.getText().isEmpty()) {
             errorLabel.setText("Please fill out all fields!");
             return;
         }
@@ -57,22 +58,21 @@ public class CreateProfileController {
         else if (male.isSelected())
             gender_char = "M";
 
-        Member member = new Member(
-                session.getUserID(),
+        Trainer trainer = new Trainer(
                 fname_field.getText(),
                 lname_field.getText(),
+                dob_picker.getValue(),
+                gender_char,
                 email_field.getText(),
                 password_field.getText(),
-                gender_char,
-                dob_picker.getValue(),
-                Integer.parseInt(height_field.getText()),
-                Integer.parseInt(weight_field.getText()),
+                Integer.parseInt(exp_field.getText()),
+                spec_field.getText(),
                 bio_field.getText()
         );
 
         try {
             databaseDriver.connect();
-            databaseDriver.addMember(member);
+            databaseDriver.addTrainer(trainer);
             databaseDriver.commit();
             databaseDriver.disconnect();
         } catch (SQLException e) {
