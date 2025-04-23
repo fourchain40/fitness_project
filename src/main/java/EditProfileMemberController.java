@@ -93,11 +93,11 @@ public class EditProfileMemberController {
     @FXML
     public void handleBack() throws Exception
     {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/myProfileMember.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/mainMenuMember.fxml"));
         Parent root = loader.load();
         Stage stage = (Stage) title.getScene().getWindow();
         stage.setScene(new Scene(root));
-        stage.setTitle("My Profile");
+        stage.setTitle("Main Menu");
         stage.show();
     }
 }
