@@ -1,5 +1,6 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,20 +16,19 @@ public class MyGroupsController {
     @FXML
     private Label title;
     @FXML
-    private TableView<GroupEntry> groupTable;
+    private TableView<Group> groupTable;
     @FXML
-    private TableColumn<GroupEntry, String> nameCol;
+    private TableColumn<Group, String> nameCol;
     @FXML
-    private TableColumn<GroupEntry, String> membersCol;
+    private TableColumn<Group, String> membersCol;
     @FXML
-    private TableColumn<GroupEntry, String> challengesCol;
+    private TableColumn<Group, String> challengesCol;
     @FXML
-    private TableColumn<GroupEntry, Void> actionCol;
+    private TableColumn<Group, Void> actionCol;
 
     @FXML
     public void initialize() {
         Session session = Session.getInstance();
-        ObservableList<GroupEntry> data = FXCollections.observableArrayList();
         DatabaseDriver databaseDriver = session.getDatabaseDriver();
             List<Group> groups = new ArrayList<Group>();
 
@@ -40,21 +40,18 @@ public class MyGroupsController {
             throw new RuntimeException(e);
         }
 
-            for(Group g: groups)
-            {
-                data.add(new GroupEntry(g.getName(), g.getMembers(), g.getChallenges()));
-            }
+        ObservableList<Group> data = FXCollections.observableArrayList(groups);
 
-            nameCol.setCellValueFactory(cell -> cell.getValue().nameProperty());
-            membersCol.setCellValueFactory(cell -> cell.getValue().membersProperty());
-            challengesCol.setCellValueFactory(cell -> cell.getValue().challengesProperty());
+            nameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getName()));
+            membersCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getMembersList()));
+            challengesCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getChallengesList()));
             actionCol.setCellFactory(col -> new TableCell<>() {
-            private final Button deleteBtn = new Button("Delete");
+            private final Button deleteBtn = new Button("Leave Group");
 
             {
                 deleteBtn.setOnAction(e -> {
-                   GroupEntry g = getTableView().getItems().get(getIndex());
-                    handleDelete(workout);
+                   Group group = getTableView().getItems().get(getIndex());
+                    handleDelete(group);
                 });
             }
 
@@ -101,5 +98,20 @@ public class MyGroupsController {
         stage.show();
     }
 
+    private void handleDelete(Group group) {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        try {
+            databaseDriver.connect();
+            databaseDriver.deleteMemberfromGroup(group.getId(), session.getUserID());
+            databaseDriver.commit();
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        groupTable.getItems().remove(group);
+    }
 
 }

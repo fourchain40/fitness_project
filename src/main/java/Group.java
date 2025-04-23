@@ -80,6 +80,34 @@ public class Group {
         return members;
     }
 
+    public String getMembersList()
+    {
+        String member_list = "";
+        for(int i=0; i<members.size(); i++){
+            if(i != members.size()-1){
+                member_list += members.get(i) + ", ";
+            }
+            else{
+                member_list += members.get(i);
+            }
+        }
+        return member_list;
+    }
+
+    public String getChallengesList()
+    {
+        String challenge_list = "";
+        for(int i=0; i<challenges.size(); i++){
+            if(i != challenges.size()-1){
+                challenge_list += challenges.get(i) + ", ";
+            }
+            else{
+                challenge_list += challenges.get(i);
+            }
+        }
+        return challenge_list;
+    }
+
     public void setMembers(ArrayList<String> members) {
         this.members = members;
     }
