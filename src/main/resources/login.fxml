@@ -10,6 +10,7 @@
         <TextField fx:id="usernameField" layoutX="100" layoutY="80" promptText="Username"/>
         <PasswordField fx:id="passwordField" layoutX="100" layoutY="120" promptText="Password"/>
         <Button text="Login" layoutX="100" layoutY="160" onAction="#handleLogin"/>
+        <Button text="Create Account" layoutX="100" layoutY="200" onAction="#handleCreateAccount"/>
         <Label fx:id="statusLabel" layoutX="100" layoutY="200"/>
     </children>
 </AnchorPane>

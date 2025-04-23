@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="CreateProfileController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <Label fx:id="title" layoutX="100" layoutY="20" text="Create Account"/>
+        <Label fx:id="fname" layoutX="100" layoutY="60" text="First Name:"/>
+        <TextField fx:id="fname_field" layoutX="170" layoutY="55"/>
+        <Label fx:id="lname" layoutX="100" layoutY="100" text="Last Name:"/>
+        <TextField fx:id="lname_field" layoutX="170" layoutY="95"/>
+        <Label fx:id="gender" layoutX="100" layoutY="140" text="Gender:"/>
+        <RadioButton fx:id="male" layoutX="170" layoutY="140" text="Male"/>
+        <RadioButton fx:id="female" layoutX="230" layoutY="140" text="Female"/>
+        <RadioButton fx:id="other" layoutX="305" layoutY="140" text="Other"/>
+        <Label fx:id="date_of_birth" layoutX="100" layoutY="180" text="Date of birth:"/>
+        <DatePicker fx:id="dob_picker" layoutX="180" layoutY="175"/>
+        <Label fx:id="height" layoutX="100" layoutY="220" text = "Height:"/>
+        <TextField fx:id="height_field" layoutX="170" layoutY="215"/>
+        <Label fx:id="cm" layoutX="330" layoutY="220" text = "cm"/>
+        <Label fx:id="weight" layoutX="100" layoutY="260" text = "Weight:"/>
+        <TextField fx:id="weight_field" layoutX="170" layoutY="255"/>
+        <Label fx:id="kg" layoutX="330" layoutY="260" text = "kg"/>
+        <Label fx:id="bio" layoutX="100" layoutY="300" text="Bio:"/>
+        <TextField fx:id="bio_field" layoutX="170" layoutY="295"/>
+        <Label fx:id="email" layoutX="100" layoutY="340" text="Email:"/>
+        <TextField fx:id="email_field" layoutX="170" layoutY="335"/>
+        <Label fx:id="password" layoutX="100" layoutY="380" text="Password:"/>
+        <TextField fx:id="password_field" layoutX="170" layoutY="375"/>
+        <Button text="Create Account" layoutX="100" layoutY="430" onAction="#handleCreate"/>
+        <Button text="Cancel" layoutX="220" layoutY="430" onAction="#handleBack"/>
+    </children>
+
+
+</AnchorPane>

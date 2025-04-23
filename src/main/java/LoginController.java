@@ -65,4 +65,14 @@ public class LoginController {
             throw new RuntimeException(e);
         }
     }
+
+    @FXML
+    private void handleCreateAccount() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/createProfile.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) statusLabel.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Create Profile");
+        stage.show();
+    }
 }
