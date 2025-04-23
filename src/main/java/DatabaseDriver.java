@@ -106,7 +106,7 @@ public class DatabaseDriver{
         return member;
     }
 
-    public boolean isEmailAvailable(String email) throws SQLException {
+    public boolean isMemberEmailAvailable(String email) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
         }
@@ -114,6 +114,7 @@ public class DatabaseDriver{
         preparedStatement.setString(1, email);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (isEmpty(resultSet)) {
+            preparedStatement.close();
             return true;
         }
         preparedStatement.close();
@@ -208,6 +209,34 @@ public class DatabaseDriver{
         return trainer;
     }
 
+    public void addTrainer(Trainer trainer) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        INSERT INTO trainer (first_name, last_name, date_of_birth, gender, email, password, years_of_experience, bio, specialization)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """
+            );
+            preparedStatement.setString(1, trainer.getFirst_name());
+            preparedStatement.setString(2, trainer.getLast_name());
+            preparedStatement.setObject(3, trainer.getDate_of_birth());
+            preparedStatement.setString(4, trainer.getGender());
+            preparedStatement.setString(5, trainer.getEmail());
+            preparedStatement.setString(6, trainer.getPassword());
+            preparedStatement.setInt(7, trainer.getYears_of_experience());
+            preparedStatement.setString(8, trainer.getBio());
+            preparedStatement.setString(9, trainer.getSpecialization());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
     public Optional<Trainer> trainerAuthenticated(String email, String password) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
@@ -224,6 +253,21 @@ public class DatabaseDriver{
         Trainer trainer = buildTrainer(resultSet);
         preparedStatement.close();
         return Optional.of(trainer);
+    }
+
+    public boolean isTrainerEmailAvailable(String email) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM trainer WHERE email = ?");
+        preparedStatement.setString(1, email);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (isEmpty(resultSet)) {
+            preparedStatement.close();
+            return true;
+        }
+        preparedStatement.close();
+        return false;
     }
 
     private Trainer buildTrainer(ResultSet resultSet) throws SQLException {
