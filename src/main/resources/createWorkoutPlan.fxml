@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="CreateWorkoutPlanController"
+            prefHeight="500.0" prefWidth="600.0">
+
+    <children>
+        <Label layoutX="50" layoutY="20" text="Create Workout Plan"/>
+
+        <Label layoutX="50" layoutY="60" text="Member Email:"/>
+        <TextField fx:id="emailField" layoutX="180" layoutY="60"/>
+
+        <Label layoutX="50" layoutY="100" text="Plan Name:"/>
+        <TextField fx:id="planNameField" layoutX="180" layoutY="100"/>
+
+        <Label layoutX="50" layoutY="140" text="Start Date:"/>
+        <DatePicker fx:id="startDatePicker" layoutX="180" layoutY="140"/>
+
+        <Label layoutX="50" layoutY="180" text="End Date:"/>
+        <DatePicker fx:id="endDatePicker" layoutX="180" layoutY="180"/>
+
+        <Label layoutX="50" layoutY="220" text="Description:"/>
+        <TextArea fx:id="descriptionArea" layoutX="180" layoutY="220" prefHeight="150" prefWidth="300"/>
+
+        <Button text="Assign Plan" layoutX="180" layoutY="390" onAction="#handleAssignPlan"/>
+        <Label fx:id="statusLabel" layoutX="180" layoutY="430"/>
+
+        <Button text="Return to Main Menu" layoutX="320" layoutY="390" onAction="#handleReturnToMenu"/>
+    </children>
+</AnchorPane>

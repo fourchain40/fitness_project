@@ -6,10 +6,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 public class MainMenuMemberController {
@@ -37,8 +41,17 @@ public class MainMenuMemberController {
     @FXML
     private TableColumn<Group, Void> actionCol;
 
-    @FXML private ComboBox<String> challengeComboBox;
-    private Map<String, Integer> challengeMap = new HashMap<>();
+    @FXML TableView<Member> memberTableView;
+    @FXML private TableColumn<Member, String> memberNameCol;
+    @FXML private TableColumn<Member, String> memberGenderCol;
+    @FXML private TableColumn<Member, String> memberDOBCol;
+    @FXML private TableColumn<Member, String> memberBioCol;
+
+    @FXML TableView<Trainer> trainerTableView;
+    @FXML private TableColumn<Trainer, String> trainerNameCol;
+    @FXML private TableColumn<Trainer, String> trainerGenderCol;
+    @FXML private TableColumn<Trainer, String> trainerSpecCol;
+    @FXML private TableColumn<Trainer, String> trainerBioCol;
 
     @FXML
     public void initialize()
@@ -189,30 +202,6 @@ public class MainMenuMemberController {
     }
 
     @FXML
-    public void handleLeaderboard()
-    {
-        Session session = Session.getInstance();
-        DatabaseDriver databaseDriver = session.getDatabaseDriver();
-
-        List<Challenge> challenges = new ArrayList<>();
-
-        try {
-            databaseDriver.connect();
-            challenges = databaseDriver.getChallengesByMemberID(session.getUserID());
-            databaseDriver.disconnect();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (Challenge challenge : challenges) {
-            String challengeName = challenge.getChallenge_name();
-            int challengeId = challenge.getChallenge_id();
-            challengeComboBox.getItems().add(challengeName);
-            challengeMap.put(challengeName, challengeId);
-        }
-    }
-
-    @FXML
     public void handleCreate() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/createGroup.fxml"));
         Parent root = loader.load();
@@ -260,22 +249,105 @@ public class MainMenuMemberController {
     }
 
     @FXML
-    public void handleLB() throws Exception {
+    public void handleMembers() throws Exception {
         Session session = Session.getInstance();
         DatabaseDriver databaseDriver = session.getDatabaseDriver();
-        try{
+
+        List<Member> members = new ArrayList<>();
+
+        try {
             databaseDriver.connect();
-        int challenge_id = databaseDriver.getChallengeIDByName(challengeComboBox.getValue());
-        databaseDriver.disconnect();
-        session.setChallengeID(challenge_id);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/leaderboard.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) title.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("View Leaderboard");
-        stage.show();}
-        catch (SQLException e) {
+            members = databaseDriver.getAllPublicMembers();
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+
+        ObservableList<Member> memberData = FXCollections.observableArrayList(members);
+
+        memberNameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getFirst_name()));
+        memberGenderCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getGender()));
+        memberDOBCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDate_of_birth().toString()));
+        memberBioCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getBio()));
+
+        memberTableView.setItems(memberData);
+    }
+
+    public void memberTableViewHandler(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            Session session = Session.getInstance();
+            DatabaseDriver databaseDriver = session.getDatabaseDriver();
+            Member member = memberTableView.getSelectionModel().getSelectedItem();
+            Optional<MemberStats> statsOpt;
+            try {
+                databaseDriver.connect();
+                statsOpt = databaseDriver.getMemberStatsByID(member.getMember_id());
+                databaseDriver.disconnect();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            MemberStats stats = new MemberStats(0, 0, 0.0);
+            if (statsOpt.isPresent()) {
+                stats = statsOpt.get();
+            }
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/memberProfileView.fxml"));
+                Parent root = loader.load();
+                MemberProfileViewController controller = loader.getController();
+                controller.setMember(member);
+                controller.setStats(stats);
+                Stage stage = (Stage) title.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Member Profile");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @FXML
+    public void handleTrainers() {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        List<Trainer> trainers = new ArrayList<>();
+
+        try {
+            databaseDriver.connect();
+            trainers = databaseDriver.getAllTrainers();
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        ObservableList<Trainer> trainerData = FXCollections.observableArrayList(trainers);
+
+        trainerNameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getFirst_name()));
+        trainerGenderCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getGender()));
+        trainerSpecCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getSpecialization()));
+        trainerBioCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getBio()));
+
+        trainerTableView.setItems(trainerData);
+    }
+
+    public void trainerTableViewHandler(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            Trainer trainer = trainerTableView.getSelectionModel().getSelectedItem();
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/trainerProfileView.fxml"));
+                Parent root = loader.load();
+                TrainerProfileViewController controller = loader.getController();
+                controller.setTrainer(trainer);
+                Stage stage = (Stage) title.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Member Profile");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         }
     }
 

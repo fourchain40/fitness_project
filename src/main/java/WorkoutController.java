@@ -40,16 +40,20 @@ public class WorkoutController {
             throw new RuntimeException(e);
         }
 
+        LocalDate today = LocalDate.now();
         for (Plan plan : plans) {
-            String planName = plan.getPlan_name();
-            int planId = plan.getPlan_id();
-            planComboBox.getItems().add(planName);
-            planMap.put(planName, planId);
+            if (plan.getEnd_date() == null || !plan.getEnd_date().isBefore(today)) {
+                String planName = plan.getPlan_name();
+                int planId = plan.getPlan_id();
+                planComboBox.getItems().add(planName);
+                planMap.put(planName, planId);
+            }
         }
 
         // Optional: add blank option for no plan
         planComboBox.getItems().add(0, "None");
     }
+
 
     @FXML
     private void handleLogWorkout() {
@@ -97,6 +101,10 @@ public class WorkoutController {
         }
 
         confirmationLabel.setText("Workout logged!");
+        workoutDetails.clear();
+        durationField.clear();
+        workoutDate.setValue(null);
+        planComboBox.setValue("None");
     }
 
     @FXML

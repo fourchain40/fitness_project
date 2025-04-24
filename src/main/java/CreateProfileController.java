@@ -2,10 +2,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -22,6 +19,7 @@ public class CreateProfileController {
     @FXML private RadioButton female;
     @FXML private RadioButton male;
     @FXML private RadioButton other;
+    @FXML private CheckBox public_visibility;
     @FXML private TextField email_field;
     @FXML private TextField password_field;
 
@@ -67,8 +65,13 @@ public class CreateProfileController {
                 dob_picker.getValue(),
                 Integer.parseInt(height_field.getText()),
                 Integer.parseInt(weight_field.getText()),
-                bio_field.getText()
+                bio_field.getText(),
+                false
         );
+
+        if (public_visibility.isSelected()) {
+            member.setPublic_visibility(true);
+        }
 
         try {
             databaseDriver.connect();
