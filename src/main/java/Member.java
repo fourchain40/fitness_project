@@ -12,6 +12,10 @@ public class Member{
     private int weight;
     private String bio;
 
+    public Member()
+    {
+    }
+
     public Member(int member_id, String first_name, String last_name, String email, String password, String gender, LocalDate date_of_birth, int height, int weight, String bio) {
         this.member_id = member_id;
         this.first_name = first_name;

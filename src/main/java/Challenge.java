@@ -8,6 +8,7 @@ public class Challenge {
     private LocalDate end_date;
     private int created_by;
     private ArrayList<Member> participants;
+    private int group_id;
 
     public Challenge(int challenge_id, String challenge_name, LocalDate start_date, LocalDate end_date, int created_by, ArrayList<Member> participants) {
         this.challenge_id = challenge_id;
@@ -27,12 +28,13 @@ public class Challenge {
         this.participants = new ArrayList<>();
     }
 
-    public Challenge(String challenge_name, LocalDate start_date, LocalDate end_date, int created_by) {
+    public Challenge(String challenge_name, LocalDate start_date, LocalDate end_date, int created_by, int group_id) {
         this.challenge_id = 0;
         this.challenge_name = challenge_name;
         this.start_date = start_date;
         this.end_date = end_date;
         this.created_by = created_by;
+        this.group_id = group_id;
         this.participants = new ArrayList<>();
     }
 
@@ -86,6 +88,11 @@ public class Challenge {
 
     public boolean addParticipant(Member member) {
         return participants.add(member);
+    }
+
+    public int getGroup_id()
+    {
+        return group_id;
     }
 
     @Override

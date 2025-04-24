@@ -1,5 +1,6 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,52 +10,61 @@ import javafx.stage.Stage;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MyGroupsController {
     @FXML
     private Label title;
     @FXML
-    private TableView<GroupEntry> groupTable;
+    private TableView<Group> groupTable;
     @FXML
-    private TableColumn<GroupEntry, String> nameCol;
+    private TableColumn<Group, String> nameCol;
     @FXML
-    private TableColumn<GroupEntry, String> membersCol;
+    private TableColumn<Group, String> membersCol;
     @FXML
-    private TableColumn<GroupEntry, String> challengesCol;
-
+    private TableColumn<Group, String> challengesCol;
+    @FXML
+    private TableColumn<Group, Void> actionCol;
 
     @FXML
     public void initialize() {
-        ObservableList<GroupEntry> data = FXCollections.observableArrayList();
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+            List<Group> groups = new ArrayList<Group>();
 
-            int memberId = Session.getInstance().getUserID();
+        try {
+            databaseDriver.connect();
+            groups = databaseDriver.getGroupsByMemberID(session.getUserID());
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-            ArrayList<String> g1_members = new ArrayList<String>();
-            g1_members.add("Alice");
-            g1_members.add("Bob");
-            ArrayList<String> g1_challenges = new ArrayList<String>();
-            g1_challenges.add("TestChallenge");
-            Group g1 = new Group(1, "TestGroup1", 1, null, g1_members, g1_challenges);
+        ObservableList<Group> data = FXCollections.observableArrayList(groups);
 
-            ArrayList<String> g2_members = new ArrayList<String>();
-            g2_members.add("Alice");
-            g2_members.add("Charlie");
-            ArrayList<String> g2_challenges = new ArrayList<String>();
-            g2_challenges.add("TestChallenge2");
-            Group g2 = new Group(2, "TestGroup2", 3, null, g2_members, g2_challenges);
+            nameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getName()));
+            membersCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getMembersList()));
+            challengesCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getChallengesList()));
+            actionCol.setCellFactory(col -> new TableCell<>() {
+            private final Button deleteBtn = new Button("Leave Group");
 
-            ArrayList<Group> groups = new ArrayList<Group>();
-            groups.add(g1);
-            groups.add(g2);
-
-            for(Group g: groups)
             {
-                data.add(new GroupEntry(g.getName(), g.getMembers(), g.getChallenges()));
+                deleteBtn.setOnAction(e -> {
+                   Group group = getTableView().getItems().get(getIndex());
+                    handleDelete(group);
+                });
             }
 
-            nameCol.setCellValueFactory(cell -> cell.getValue().nameProperty());
-            membersCol.setCellValueFactory(cell -> cell.getValue().membersProperty());
-            challengesCol.setCellValueFactory(cell -> cell.getValue().challengesProperty());
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(deleteBtn);
+                }
+            }
+        });
         groupTable.setItems(data);
     }
 
@@ -77,4 +87,31 @@ public class MyGroupsController {
         stage.setTitle("Create New Group");
         stage.show();
     }
+
+    @FXML
+    public void handleJoin() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/joinGroup.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Join Existing Group");
+        stage.show();
+    }
+
+    private void handleDelete(Group group) {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        try {
+            databaseDriver.connect();
+            databaseDriver.deleteMemberfromGroup(group.getId(), session.getUserID());
+            databaseDriver.commit();
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        groupTable.getItems().remove(group);
+    }
+
 }

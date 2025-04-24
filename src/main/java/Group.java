@@ -1,13 +1,14 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Group {
     private int id;
     private String name;
     private int createdBy;
     private LocalDate createdDate;
-    private ArrayList<String> members;
-    private ArrayList<String> challenges;
+    private List<String> members;
+    private List<String> challenges;
 
     public Group(int id, String name, int createdBy, LocalDate createdDate, ArrayList<String> members, ArrayList<String> challenges) {
         this.id = id;
@@ -75,15 +76,43 @@ public class Group {
         this.createdDate = createdDate;
     }
 
-    public ArrayList<String> getMembers() {
+    public List<String> getMembers() {
         return members;
+    }
+
+    public String getMembersList()
+    {
+        String member_list = "";
+        for(int i=0; i<members.size(); i++){
+            if(i != members.size()-1){
+                member_list += members.get(i) + ", ";
+            }
+            else{
+                member_list += members.get(i);
+            }
+        }
+        return member_list;
+    }
+
+    public String getChallengesList()
+    {
+        String challenge_list = "";
+        for(int i=0; i<challenges.size(); i++){
+            if(i != challenges.size()-1){
+                challenge_list += challenges.get(i) + ", ";
+            }
+            else{
+                challenge_list += challenges.get(i);
+            }
+        }
+        return challenge_list;
     }
 
     public void setMembers(ArrayList<String> members) {
         this.members = members;
     }
 
-    public ArrayList<String> getChallenges() {
+    public List<String> getChallenges() {
         return challenges;
     }
 

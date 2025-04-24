@@ -507,7 +507,7 @@ public class DatabaseDriver{
                         """
             );
             preparedStatement.setString(1, group.getName());
-            preparedStatement.setObject(2, group.getCreatedDate());
+            preparedStatement.setDate(2, Date.valueOf(group.getCreatedDate()));
             preparedStatement.setInt(3, group.getCreatedBy());
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -515,6 +515,27 @@ public class DatabaseDriver{
             rollback();
             throw e;
         }
+    }
+
+    public Group getGroupByName(String name) throws SQLException
+    {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                    SELECT *
+                    FROM fitnessgroup
+                    WHERE group_name = ?
+                    """
+        );
+        preparedStatement.setString(1, name);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        Group group = null;
+        if(resultSet.next()) {
+            group = buildGroup(resultSet);
+        }
+        return group;
     }
 
     public void addMembersToGroup(Group group, List<Member> members) throws SQLException {
@@ -562,6 +583,28 @@ public class DatabaseDriver{
         return groups;
     }
 
+    public List<Group> getGroupsNotIn(int member_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                    SELECT *
+                    FROM fitnessgroup
+                    WHERE group_id NOT IN (SELECT DISTINCT group_id FROM groupmembership WHERE member_id = ?)
+                    """
+        );
+        preparedStatement.setInt(1, member_id);
+        List<Group> groups = new ArrayList<>();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            Group group = buildGroup(resultSet);
+            groups.add(group);
+        }
+        preparedStatement.close();
+        return groups;
+    }
+
     public List<Member> getMembersInGroup(Group group) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
@@ -584,12 +627,49 @@ public class DatabaseDriver{
         return members;
     }
 
+    public void deleteMemberfromGroup(int group_id, int member_id) throws SQLException
+    {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                    DELETE FROM groupmembership
+                    WHERE group_id = ? AND member_id = ?
+                    """
+            );
+            preparedStatement.setInt(1, group_id);
+            preparedStatement.setInt(2, member_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+
+    }
+
     private Group buildGroup(ResultSet resultSet) throws SQLException {
         int group_id = resultSet.getInt("group_id");
         String group_name = resultSet.getString("group_name");
         LocalDate created_date = resultSet.getObject("created_date", LocalDate.class);
         int created_by = resultSet.getInt("created_by");
-        return new Group(group_id, group_name, created_by, created_date, null, null);
+        Group newGroup = new Group(group_id, group_name, created_by, created_date, new ArrayList<>(), new ArrayList<>());
+        List<Member> members = getMembersInGroup(newGroup);
+        List<Challenge> challenges = getChallengesByGroupID(group_id);
+        ArrayList<String> memberNames = new ArrayList<String>();
+        for(Member member : members) {
+            memberNames.add(member.getFirst_name() + " " + member.getLast_name());
+        }
+        newGroup.setMembers(memberNames);
+        ArrayList<String> challengeNames = new ArrayList<String>();
+        for(Challenge challenge : challenges) {
+            challengeNames.add(challenge.getChallenge_name());
+        }
+        newGroup.setChallenges(challengeNames);
+
+        return newGroup;
     }
 
     // Challenge operations
@@ -601,14 +681,15 @@ public class DatabaseDriver{
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
-                        INSERT INTO challenge (challenge_name, start_date, end_date, created_by)
-                        VALUES (?, ?, ?, ?)
+                        INSERT INTO challenge (challenge_name, start_date, end_date, created_by, group_id)
+                        VALUES (?, ?, ?, ?, ?)
                         """
             );
             preparedStatement.setString(1, challenge.getChallenge_name());
-            preparedStatement.setObject(2, challenge.getStart_date());
-            preparedStatement.setObject(3, challenge.getEnd_date());
+            preparedStatement.setDate(2, Date.valueOf(challenge.getStart_date()));
+            preparedStatement.setDate(3, Date.valueOf(challenge.getEnd_date()));
             preparedStatement.setInt(4, challenge.getCreated_by());
+            preparedStatement.setInt(5, challenge.getGroup_id());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e) {
@@ -617,7 +698,7 @@ public class DatabaseDriver{
         }
     }
 
-    public void addMembersToChallenge(Challenge challenge, List<Member> members) throws SQLException {
+    public void addMembersToChallenge(int challenge_id, List<Member> members) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
         }
@@ -625,11 +706,12 @@ public class DatabaseDriver{
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(
                         """
-                            INSERT INTO challengeparticipation (member_id, points)
-                            VALUES (?, 0)
+                            INSERT INTO challengeparticipation (challenge_id, member_id, points)
+                            VALUES (?, ?, 0)
                             """
                 );
-                preparedStatement.setInt(1, member.getMember_id());
+                preparedStatement.setInt(1, challenge_id);
+                preparedStatement.setInt(2, member.getMember_id());
                 preparedStatement.executeUpdate();
                 preparedStatement.close();
             } catch (SQLException e) {
@@ -685,6 +767,28 @@ public class DatabaseDriver{
         return challenges;
     }
 
+    public List<Challenge> getChallengesByGroupID(int group_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                    SELECT *
+                    FROM challenge
+                    WHERE group_id = ?
+                    """
+        );
+        preparedStatement.setInt(1, group_id);
+        List<Challenge> challenges = new ArrayList<>();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            Challenge challenge = buildChallenge(resultSet);
+            challenges.add(challenge);
+        }
+        preparedStatement.close();
+        return challenges;
+    }
+
     public List<Member> getMembersInChallenge(Challenge challenge) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
@@ -705,6 +809,28 @@ public class DatabaseDriver{
         }
         preparedStatement.close();
         return members;
+    }
+
+    public int getChallengeIDByNameandGroup(String name, int group_id) throws SQLException
+    {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                    SELECT *
+                    FROM challenge
+                    WHERE challenge_name = ? AND group_id = ?
+                    """
+        );
+        preparedStatement.setString(1, name);
+        preparedStatement.setInt(2, group_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        int challenge_id = 0;
+        if(resultSet.next()) {
+            challenge_id = resultSet.getInt("challenge_id");
+        }
+        return challenge_id;
     }
 
     private Challenge buildChallenge(ResultSet resultSet) throws SQLException {

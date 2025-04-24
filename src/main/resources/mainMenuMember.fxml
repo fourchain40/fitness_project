@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
 <AnchorPane prefHeight="266.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainMenuMemberController">
     <children>
       <TabPane prefHeight="405.0" prefWidth="623.0" tabClosingPolicy="UNAVAILABLE">
@@ -52,17 +54,27 @@
                   </AnchorPane>
             </content>
           </Tab>
-            <Tab text="Groups">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
-            </Tab>
-            <Tab text="Challenges">
+            <Tab onSelectionChanged="#handleGroups" text="Groups">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                          <Button onAction="#handleChallenge" text="Join or view a challenge" />
-                     </children>
+                      <children>
+                          <Label fx:id="title_group" layoutX="20" layoutY="10" text="My Groups">
+                          <font>
+                              <Font name="System Bold" size="13.0" />
+                          </font>
+                      </Label>
+                          <TableView fx:id="groupTable" layoutX="20" layoutY="50" prefWidth="580" prefHeight="200">
+                              <columns>
+                                  <TableColumn fx:id="nameCol" text="Group Name" prefWidth="100"/>
+                                  <TableColumn fx:id="membersCol" text="Members" prefWidth="200"/>
+                                  <TableColumn fx:id="challengesCol" text="Challenges" prefWidth="180"/>
+                                  <TableColumn fx:id="actionCol" text="Actions" prefWidth="100"/>
+                              </columns>
+                          </TableView>
+                          <Button layoutX="20" layoutY="280" text="Create new group" onAction="#handleCreate"/>
+                          <Button text="Join existing group" layoutX="150" layoutY="280" onAction="#handleJoin"/>
+                          <Button text="Create a challenge for your workout group" layoutX="300" layoutY="280" onAction="#handleNewChallenge"/>
+                      </children>
                   </AnchorPane>
                </content>
             </Tab>

@@ -14,10 +14,12 @@
     <TableView fx:id="groupTable" layoutX="20" layoutY="50" prefWidth="560" prefHeight="200">
         <columns>
             <TableColumn fx:id="nameCol" text="Group Name" prefWidth="100"/>
-            <TableColumn fx:id="membersCol" text="Members" prefWidth="120"/>
+            <TableColumn fx:id="membersCol" text="Members" prefWidth="200"/>
             <TableColumn fx:id="challengesCol" text="Challenges" prefWidth="200"/>
+            <TableColumn fx:id="actionCol" text="Actions" prefWidth="100"/>
         </columns>
     </TableView>
     <Button layoutX="20" layoutY="300" text="Create new group" onAction="#handleCreate"/>
+    <Button text="Join existing group" layoutX="150" layoutY="300" onAction="#handleJoin"/>
     <Button layoutX="20" layoutY="350" text="Back" onAction="#handleBack"/>
 </AnchorPane>
