@@ -197,6 +197,57 @@ public class DatabaseDriver{
         }
     }
 
+    public void adminUpdateMember(Member member) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        UPDATE member
+                        SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, height = ?, weight = ?, bio = ?, public_visibility = ?, email = ?, password = ?
+                        WHERE member_id = ?
+                        """
+            );
+            preparedStatement.setString(1, member.getFirst_name());
+            preparedStatement.setString(2, member.getLast_name());
+            preparedStatement.setString(3, member.getGender());
+            preparedStatement.setObject(4, member.getDate_of_birth());
+            preparedStatement.setInt(5, member.getHeight());
+            preparedStatement.setInt(6, member.getWeight());
+            preparedStatement.setString(7, member.getBio());
+            preparedStatement.setBoolean(8, member.isPublic_visibility());
+            preparedStatement.setString(9, member.getEmail());
+            preparedStatement.setString(10, member.getPassword());
+            preparedStatement.setInt(11, member.getMember_id());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
+    public void deleteMemberByID(int member_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        DELETE FROM member
+                        WHERE member_id = ?
+                        """
+            );
+            preparedStatement.setInt(1, member_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
     private Member buildMember(ResultSet resultSet) throws SQLException {
         int member_id = resultSet.getInt("member_id");
         String first_name = resultSet.getString("first_name");
@@ -303,6 +354,84 @@ public class DatabaseDriver{
         return false;
     }
 
+    public void updateTrainer(Trainer trainer) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        UPDATE trainer
+                        SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, years_of_experience = ?, bio = ?, specialization = ?
+                        WHERE trainer_id = ?
+                        """
+            );
+            preparedStatement.setString(1, trainer.getFirst_name());
+            preparedStatement.setString(2, trainer.getLast_name());
+            preparedStatement.setString(3, trainer.getGender());
+            preparedStatement.setObject(4, trainer.getDate_of_birth());
+            preparedStatement.setInt(5, trainer.getYears_of_experience());
+            preparedStatement.setString(6, trainer.getBio());
+            preparedStatement.setString(7, trainer.getSpecialization());
+            preparedStatement.setInt(8, trainer.getTrainer_id());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
+    public void adminUpdateTrainer(Trainer trainer) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        UPDATE trainer
+                        SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, years_of_experience = ?, bio = ?, specialization = ?, email = ?, password = ?
+                        WHERE trainer_id = ?
+                        """
+            );
+            preparedStatement.setString(1, trainer.getFirst_name());
+            preparedStatement.setString(2, trainer.getLast_name());
+            preparedStatement.setString(3, trainer.getGender());
+            preparedStatement.setObject(4, trainer.getDate_of_birth());
+            preparedStatement.setInt(5, trainer.getYears_of_experience());
+            preparedStatement.setString(6, trainer.getBio());
+            preparedStatement.setString(7, trainer.getSpecialization());
+            preparedStatement.setString(8, trainer.getEmail());
+            preparedStatement.setString(9, trainer.getPassword());
+            preparedStatement.setInt(10, trainer.getTrainer_id());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
+    public void deleteTrainerByID(int trainer_id) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        DELETE FROM trainer
+                        WHERE trainer_id = ?
+                        """
+            );
+            preparedStatement.setInt(1, trainer_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
     private Trainer buildTrainer(ResultSet resultSet) throws SQLException {
         int trainer_id = resultSet.getInt("trainer_id");
         String first_name = resultSet.getString("first_name");
@@ -330,6 +459,31 @@ public class DatabaseDriver{
         Administrator admin = buildAdmin(resultSet);
         preparedStatement.close();
         return admin;
+    }
+
+    public void updateAdmin(Administrator admin) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        UPDATE administrator
+                        SET first_name = ?, last_name = ?, email = ?, password = ?
+                        WHERE admin_id = ?
+                        """
+            );
+            preparedStatement.setString(1, admin.getFirst_name());
+            preparedStatement.setString(2, admin.getLast_name());
+            preparedStatement.setString(3, admin.getEmail());
+            preparedStatement.setString(4, admin.getPassword());
+            preparedStatement.setInt(5, admin.getAdmin_id());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
     }
 
     public Optional<Administrator> adminAuthenticated(String email, String password) throws SQLException {
