@@ -6,8 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,12 @@ public class MainMenuMemberController {
     private TableColumn<Group, String> challengesCol;
     @FXML
     private TableColumn<Group, Void> actionCol;
+
+    @FXML TableView<Member> memberTableView;
+    @FXML private TableColumn<Member, String> memberNameCol;
+    @FXML private TableColumn<Member, String> memberGenderCol;
+    @FXML private TableColumn<Member, String> memberDOBCol;
+    @FXML private TableColumn<Member, String> memberBioCol;
 
     @FXML
     public void initialize()
@@ -234,4 +242,63 @@ public class MainMenuMemberController {
         stage.show();
     }
 
+    @FXML
+    public void handleMembers() throws Exception {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        List<Member> members = new ArrayList<>();
+
+        try {
+            databaseDriver.connect();
+            members = databaseDriver.getAllPublicMembers();
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        ObservableList<Member> memberData = FXCollections.observableArrayList(members);
+
+        memberNameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getFirst_name()));
+        memberGenderCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getGender()));
+        memberDOBCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDate_of_birth().toString()));
+        memberBioCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getBio()));
+
+        memberTableView.setItems(memberData);
+    }
+
+    public void memberTableViewHandler(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            Session session = Session.getInstance();
+            DatabaseDriver databaseDriver = session.getDatabaseDriver();
+            Member member = memberTableView.getSelectionModel().getSelectedItem();
+            Optional<MemberStats> statsOpt;
+            try {
+                databaseDriver.connect();
+                statsOpt = databaseDriver.getMemberStatsByID(member.getMember_id());
+                databaseDriver.disconnect();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            MemberStats stats = new MemberStats(0, 0, 0.0);
+            if (statsOpt.isPresent()) {
+                stats = statsOpt.get();
+            }
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/memberProfileView.fxml"));
+                Parent root = loader.load();
+                MemberProfileViewController controller = loader.getController();
+                controller.setMember(member);
+                controller.setStats(stats);
+                Stage stage = (Stage) title.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setUserData(member);
+                stage.setTitle("Member Profile");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }
