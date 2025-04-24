@@ -339,6 +339,34 @@ public class DatabaseDriver{
         return Optional.of(trainer);
     }
 
+    public void updateTrainer(Trainer trainer) throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    """
+                        UPDATE trainer
+                        SET first_name = ?, last_name = ?, date_of_birth = ?, gender = ?, years_of_experience = ?, specialization = ?, bio = ?
+                        WHERE trainer_id = ?
+                        """
+            );
+            preparedStatement.setString(1, trainer.getFirst_name());
+            preparedStatement.setString(2, trainer.getLast_name());
+            preparedStatement.setString(4, trainer.getGender());
+            preparedStatement.setObject(3, trainer.getDate_of_birth());
+            preparedStatement.setInt(5, trainer.getYears_of_experience());
+            preparedStatement.setString(6, trainer.getSpecialization());
+            preparedStatement.setString(7, trainer.getBio());
+            preparedStatement.setInt(8, trainer.getTrainer_id());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (SQLException e) {
+            rollback();
+            throw e;
+        }
+    }
+
     public boolean isTrainerEmailAvailable(String email) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");

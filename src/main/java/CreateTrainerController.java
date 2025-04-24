@@ -66,8 +66,9 @@ public class CreateTrainerController {
                 email_field.getText(),
                 password_field.getText(),
                 Integer.parseInt(exp_field.getText()),
-                spec_field.getText(),
-                bio_field.getText()
+                bio_field.getText(),
+                spec_field.getText()
+
         );
 
         try {

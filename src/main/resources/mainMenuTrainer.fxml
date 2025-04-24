@@ -6,16 +6,85 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.text.Font?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="MainMenuTrainerController"
             prefHeight="400.0" prefWidth="600.0">
 
     <children>
-        <Label fx:id="title" layoutX="100" layoutY="50" text="Main Menu"/>
-        <Button text="View Profile" layoutX="100" layoutY="100" onAction="#handleProfile"/>
-        <Button text="Create Workout Plan" layoutX="100" layoutY="150" onAction="#handleCreateWorkoutPlan"/>
-        <Button text="Log Out" layoutX="100" layoutY="200" onAction="#handleLogOut"/>
+
+        <TabPane prefHeight="405.0" prefWidth="623.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="My Profile">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Button layoutX="21.0" layoutY="75.0" onAction="#handleEdit" text="Edit Profile" />
+                                <Label fx:id="title" layoutX="14.0" layoutY="14.0" text="My Profile">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <Button layoutX="21.0" layoutY="125" onAction="#handleProfile" text="View Profile"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <Tab onSelectionChanged="#handleCreateWorkoutPlan" text="CreatePlan">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    </content>
+                </Tab>
+
+                <Tab onSelectionChanged="#handleGroups" text="Groups">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label fx:id="title_group" layoutX="20" layoutY="10" text="My Groups">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <TableView fx:id="groupTable" layoutX="20" layoutY="50" prefWidth="580" prefHeight="200">
+                                    <columns>
+                                        <TableColumn fx:id="nameCol" text="Group Name" prefWidth="100"/>
+                                        <TableColumn fx:id="membersCol" text="Members" prefWidth="200"/>
+                                        <TableColumn fx:id="challengesCol" text="Challenges" prefWidth="180"/>
+                                        <TableColumn fx:id="actionCol" text="Actions" prefWidth="100"/>
+                                    </columns>
+                                </TableView>
+                                <Button layoutX="20" layoutY="280" text="Create new group" onAction="#handleCreate"/>
+                                <Button text="Join existing group" layoutX="150" layoutY="280" onAction="#handleJoin"/>
+                                <Button text="Create a challenge for your workout group" layoutX="300" layoutY="280" onAction="#handleNewChallenge"/>
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab onSelectionChanged="#handleMembers" text="Members">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <TableView fx:id="memberTableView" onMouseClicked="#memberTableViewHandler" prefHeight="374.0" prefWidth="623.0">
+                                    <columns>
+                                        <TableColumn fx:id="memberNameCol" prefWidth="200.0" text="First Name" />
+                                        <TableColumn fx:id="memberGenderCol" prefWidth="68.0" text="Gender" />
+                                        <TableColumn fx:id="memberDOBCol" minWidth="0.0" prefWidth="100.0" text="Birthday" />
+                                        <TableColumn fx:id="memberBioCol" prefWidth="251.0" text="Bio" />
+                                    </columns>
+                                </TableView>
+                            </children></AnchorPane>
+                    </content>
+                </Tab>
+                <Tab onSelectionChanged="#handleLogOut" text="Log Out">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    </content>
+                </Tab>
+
+            </tabs>
+        </TabPane>
     </children>
 
 </AnchorPane>
