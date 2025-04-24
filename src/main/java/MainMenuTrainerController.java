@@ -34,5 +34,15 @@ public class MainMenuTrainerController {
         stage.setTitle("Gym Tracker Login");
         stage.show();
     }
+
+    @FXML
+    public void handleCreateWorkoutPlan() throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/createWorkoutPlan.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("Create Workout Plan");
+        stage.show();
+    }
 }
 
