@@ -818,6 +818,27 @@ public class DatabaseDriver{
         return challenge_id;
     }
 
+    public int getChallengeIDByName(String name) throws SQLException
+    {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                    SELECT *
+                    FROM challenge
+                    WHERE challenge_name = ?
+                    """
+        );
+        preparedStatement.setString(1, name);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        int challenge_id = 0;
+        if(resultSet.next()) {
+            challenge_id = resultSet.getInt("challenge_id");
+        }
+        return challenge_id;
+    }
+
     private Challenge buildChallenge(ResultSet resultSet) throws SQLException {
         int challenge_id = resultSet.getInt("challenge_id");
         String challenge_name = resultSet.getString("challenge_name");
@@ -825,6 +846,38 @@ public class DatabaseDriver{
         LocalDate end_date = resultSet.getObject("end_date", LocalDate.class);
         int created_by = resultSet.getInt("created_by");
         return new Challenge(challenge_id, challenge_name, start_date, end_date, created_by);
+    }
+
+    public List<LeaderboardRow> getChallengeLeaderboard(int challenge_id) throws SQLException
+    {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement(
+                """
+                SELECT   first_name, last_name, points, RANK() OVER (ORDER BY points DESC) as points_rank
+                FROM (Member NATURAL JOIN ChallengeParticipation)
+                WHERE challenge_id = ?
+            """
+        );
+        preparedStatement.setInt(1, challenge_id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        List<LeaderboardRow> rows = new ArrayList<>();
+        while(resultSet.next()) {
+            LeaderboardRow row = buildRow(resultSet);
+            rows.add(row);
+        }
+        preparedStatement.close();
+        return rows;
+    }
+
+    private LeaderboardRow buildRow(ResultSet resultSet) throws SQLException {
+        String first_name = resultSet.getString("first_name");
+        String last_name = resultSet.getString("last_name");
+        String name = first_name + " " + last_name;
+        int points = resultSet.getInt("points");
+        int rank = resultSet.getInt("points_rank");
+        return new LeaderboardRow(rank, name, points);
     }
 
     private static boolean isEmpty(ResultSet resultSet) throws SQLException {

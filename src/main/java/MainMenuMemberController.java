@@ -9,9 +9,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class MainMenuMemberController {
@@ -38,6 +36,9 @@ public class MainMenuMemberController {
     private TableColumn<Group, String> challengesCol;
     @FXML
     private TableColumn<Group, Void> actionCol;
+
+    @FXML private ComboBox<String> challengeComboBox;
+    private Map<String, Integer> challengeMap = new HashMap<>();
 
     @FXML
     public void initialize()
@@ -188,6 +189,30 @@ public class MainMenuMemberController {
     }
 
     @FXML
+    public void handleLeaderboard()
+    {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        List<Challenge> challenges = new ArrayList<>();
+
+        try {
+            databaseDriver.connect();
+            challenges = databaseDriver.getChallengesByMemberID(session.getUserID());
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (Challenge challenge : challenges) {
+            String challengeName = challenge.getChallenge_name();
+            int challengeId = challenge.getChallenge_id();
+            challengeComboBox.getItems().add(challengeName);
+            challengeMap.put(challengeName, challengeId);
+        }
+    }
+
+    @FXML
     public void handleCreate() throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/createGroup.fxml"));
         Parent root = loader.load();
@@ -232,6 +257,26 @@ public class MainMenuMemberController {
         stage.setScene(new Scene(root));
         stage.setTitle("Create Challenge");
         stage.show();
+    }
+
+    @FXML
+    public void handleLB() throws Exception {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+        try{
+            databaseDriver.connect();
+        int challenge_id = databaseDriver.getChallengeIDByName(challengeComboBox.getValue());
+        databaseDriver.disconnect();
+        session.setChallengeID(challenge_id);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/leaderboard.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) title.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle("View Leaderboard");
+        stage.show();}
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

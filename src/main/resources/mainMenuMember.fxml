@@ -9,6 +9,7 @@
 
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.ComboBox?>
 <AnchorPane prefHeight="266.0" prefWidth="520.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainMenuMemberController">
     <children>
       <TabPane prefHeight="405.0" prefWidth="623.0" tabClosingPolicy="UNAVAILABLE">
@@ -86,10 +87,21 @@
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                </content>
             </Tab>
-            <Tab text="Leaderboards">
-               <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-               </content>
+            <Tab onSelectionChanged="#handleLeaderboard" text="Leaderboards">
+                <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label fx:id="title_lb" layoutX="20" layoutY="10" text="My Leaderboards">
+                                    <font>
+                                        <Font name="System Bold" size="13.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="group" layoutX="90" layoutY="60" text="Challenge Name:"/>
+                                <ComboBox fx:id="challengeComboBox" layoutX="190" layoutY="60" prefWidth="200"/>
+                                <Button fx:id="view" layoutX="190" layoutY="150" text="View leaderboard" onAction="#handleLB"/>
+                            </children>
+                    </AnchorPane>
+                </content>
             </Tab>
             <Tab onSelectionChanged="#handleLogOut" text="Log Out">
                <content>

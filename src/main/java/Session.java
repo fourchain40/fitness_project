@@ -3,6 +3,7 @@ public class Session {
     private int userID;
     private String role;
     private DatabaseDriver databaseDriver;
+    private int challengeID;
 
     private Session() {
     }
@@ -37,5 +38,13 @@ public class Session {
 
     public DatabaseDriver getDatabaseDriver() {
         return databaseDriver;
+    }
+
+    public void setChallengeID(int id) {
+        challengeID = id;
+    }
+    public int getChallengeID()
+    {
+        return challengeID;
     }
 }

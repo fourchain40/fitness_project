@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="LeaderboardController"
+            prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <Label fx:id="title" layoutX="20" layoutY="10" text="My Leaderboards">
+        <font>
+            <Font name="System Bold" size="13.0" />
+        </font>
+        </Label>
+        <TableView fx:id="lbTable" layoutX="20" layoutY="50" prefWidth="280" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="rankCol" text="Rank" prefWidth="60"/>
+                <TableColumn fx:id="nameCol" text="Name" prefWidth="160"/>
+                <TableColumn fx:id="pointsCol" text="Points" prefWidth="60"/>
+            </columns>
+        </TableView>
+        <Button fx:id="back" layoutX="160" layoutY="270" text="Back" onAction="#handleBack"/>
+    </children>
+
+</AnchorPane>
