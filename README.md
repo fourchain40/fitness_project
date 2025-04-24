@@ -14,6 +14,7 @@ Run the project with:
 ./gradlew run
 
 When prompted to log in, use one of the accounts already present in the database. Use either:
+
 Member:
 
 Email: alice@example.com
