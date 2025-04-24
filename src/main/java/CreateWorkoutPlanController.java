@@ -28,6 +28,11 @@ public class CreateWorkoutPlanController {
             return;
         }
 
+        if (startDate.isBefore(LocalDate.now())) {
+            statusLabel.setText("Start date must be today or later.");
+            return;
+        }
+
         if (startDate.isAfter(endDate)) {
             statusLabel.setText("End date must be after start date.");
             return;
