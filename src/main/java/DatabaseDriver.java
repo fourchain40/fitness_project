@@ -224,6 +224,21 @@ public class DatabaseDriver{
         return trainer;
     }
 
+    public List<Trainer> getAllTrainers() throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM trainer");
+        List<Trainer> trainers = new ArrayList<>();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            Trainer trainer = buildTrainer(resultSet);
+            trainers.add(trainer);
+        }
+        preparedStatement.close();
+        return trainers;
+    }
+
     public void addTrainer(Trainer trainer) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");

@@ -47,6 +47,12 @@ public class MainMenuMemberController {
     @FXML private TableColumn<Member, String> memberDOBCol;
     @FXML private TableColumn<Member, String> memberBioCol;
 
+    @FXML TableView<Trainer> trainerTableView;
+    @FXML private TableColumn<Trainer, String> trainerNameCol;
+    @FXML private TableColumn<Trainer, String> trainerGenderCol;
+    @FXML private TableColumn<Trainer, String> trainerSpecCol;
+    @FXML private TableColumn<Trainer, String> trainerBioCol;
+
     @FXML
     public void initialize()
     {
@@ -292,7 +298,6 @@ public class MainMenuMemberController {
                 controller.setStats(stats);
                 Stage stage = (Stage) title.getScene().getWindow();
                 stage.setScene(new Scene(root));
-                stage.setUserData(member);
                 stage.setTitle("Member Profile");
                 stage.show();
             } catch (IOException e) {
@@ -301,4 +306,49 @@ public class MainMenuMemberController {
             }
         }
     }
+
+    @FXML
+    public void handleTrainers() {
+        Session session = Session.getInstance();
+        DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        List<Trainer> trainers = new ArrayList<>();
+
+        try {
+            databaseDriver.connect();
+            trainers = databaseDriver.getAllTrainers();
+            databaseDriver.disconnect();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        ObservableList<Trainer> trainerData = FXCollections.observableArrayList(trainers);
+
+        trainerNameCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getFirst_name()));
+        trainerGenderCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getGender()));
+        trainerSpecCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getSpecialization()));
+        trainerBioCol.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getBio()));
+
+        trainerTableView.setItems(trainerData);
+    }
+
+    public void trainerTableViewHandler(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            Trainer trainer = trainerTableView.getSelectionModel().getSelectedItem();
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/trainerProfileView.fxml"));
+                Parent root = loader.load();
+                TrainerProfileViewController controller = loader.getController();
+                controller.setTrainer(trainer);
+                Stage stage = (Stage) title.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("Member Profile");
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }
