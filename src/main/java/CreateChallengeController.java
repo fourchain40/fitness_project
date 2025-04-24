@@ -28,6 +28,9 @@ public class CreateChallengeController {
     @FXML
     public DatePicker end_date;
 
+    @FXML
+    public Label confirmationLabel;
+
     @FXML private ComboBox<String> groupComboBox;
     private Map<String, Integer> groupMap = new HashMap<>();
 
@@ -69,6 +72,10 @@ public class CreateChallengeController {
         try {
             Session session = Session.getInstance();
             DatabaseDriver databaseDriver = session.getDatabaseDriver();
+            if (groupComboBox.getSelectionModel().isEmpty()||name_field.getText().isEmpty()) {
+                confirmationLabel.setText("Please fill out all the fields.");
+                return;
+            }
             databaseDriver.connect();
             Group group = databaseDriver.getGroupByName(groupComboBox.getValue());
             int group_id = group.getId();

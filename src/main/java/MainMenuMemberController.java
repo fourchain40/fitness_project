@@ -27,6 +27,7 @@ public class MainMenuMemberController {
     @FXML private Label total_minutes;
     @FXML private Label avg_duration;
     @FXML private Label stats_err;
+    @FXML private Label confirmationLabel;
 
     @FXML
     private TableView<Group> groupTable;
@@ -380,6 +381,10 @@ public class MainMenuMemberController {
     public void handleLB() throws Exception {
         Session session = Session.getInstance();
         DatabaseDriver databaseDriver = session.getDatabaseDriver();
+        if (challengeComboBox.getSelectionModel().isEmpty()) {
+            confirmationLabel.setText("Please select a challenge.");
+            return;
+        }
         try{
             databaseDriver.connect();
             int challenge_id = databaseDriver.getChallengeIDByName(challengeComboBox.getValue());

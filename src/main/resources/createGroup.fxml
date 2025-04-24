@@ -17,6 +17,9 @@
         <CheckBox fx:id="join_group" text="Join new group" layoutX="170" layoutY="100"/>
         <Button text="Create group" layoutX="100" layoutY="150" onAction="#handleCreate"/>
         <Button text="Cancel" layoutX="100" layoutY="200" onAction="#handleBack"/>
+        <Label fx:id="confirmationLabel"
+               layoutX="50" layoutY="300"
+               text=""/>
     </children>
 
 </AnchorPane>

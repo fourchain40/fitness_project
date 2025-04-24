@@ -121,6 +121,9 @@
                                 <Label fx:id="group" layoutX="90" layoutY="60" text="Challenge Name:"/>
                                 <ComboBox fx:id="challengeComboBox" layoutX="190" layoutY="60" prefWidth="200"/>
                                 <Button fx:id="view" layoutX="190" layoutY="150" text="View leaderboard" onAction="#handleLB"/>
+                                <Label fx:id="confirmationLabel"
+                                       layoutX="50" layoutY="200"
+                                       text=""/>
                             </children>
                     </AnchorPane>
                 </content>

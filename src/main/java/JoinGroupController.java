@@ -16,6 +16,9 @@ public class JoinGroupController {
     @FXML
     public Label title;
 
+    @FXML
+    public Label confirmationLabel;
+
     @FXML private ComboBox<String> groupComboBox;
     private Map<String, Integer> groupMap = new HashMap<>();
 
@@ -56,6 +59,10 @@ public class JoinGroupController {
     @FXML
     public void handleJoin() throws Exception
     {
+        if (groupComboBox.getSelectionModel().isEmpty()) {
+            confirmationLabel.setText("Please select a group.");
+            return;
+        }
        try {
            Session session = Session.getInstance();
            DatabaseDriver databaseDriver = session.getDatabaseDriver();

@@ -22,6 +22,9 @@
         <DatePicker fx:id="end_date" layoutX="190" layoutY="180"/>
         <Button text="Create challenge" layoutX="100" layoutY="250" onAction="#handleSubmit"/>
         <Button text="Cancel" layoutX="230" layoutY="250" onAction="#handleBack"/>
+        <Label fx:id="confirmationLabel"
+               layoutX="50" layoutY="300"
+               text=""/>
     </children>
 
 </AnchorPane>

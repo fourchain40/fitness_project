@@ -16,6 +16,8 @@ public class CreateGroupController {
     @FXML
     public Label title;
     @FXML
+    public Label confirmationLabel;
+    @FXML
     public TextField name_field;
     public CheckBox join_group;
 
@@ -28,6 +30,11 @@ public class CreateGroupController {
     public void handleCreate() throws Exception {
         Session session = Session.getInstance();
         DatabaseDriver databaseDriver = session.getDatabaseDriver();
+
+        if (name_field.getText().isEmpty()) {
+            confirmationLabel.setText("Please fill out all the fields.");
+            return;
+        }
 
         Group group = new Group(0, name_field.getText(), session.getUserID(), LocalDate.now(), new ArrayList<String>(), new ArrayList<String>());
         try {
