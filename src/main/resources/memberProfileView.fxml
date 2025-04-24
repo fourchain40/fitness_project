@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="349.0" prefWidth="473.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MemberProfileViewController">
+
+    <children>
+        <Label fx:id="title" layoutX="100" layoutY="50" text="Member Profile">
+         <font>
+            <Font name="System Bold" size="13.0" />
+         </font></Label>
+        <Label fx:id="name" layoutX="100" layoutY="100" />
+        <Label fx:id="gender" layoutX="100" layoutY="120" />
+        <Label fx:id="date_of_birth" layoutX="100" layoutY="140" />
+        <Label fx:id="height" layoutX="100" layoutY="160" />
+        <Label fx:id="weight" layoutX="100" layoutY="180" />
+        <Label fx:id="bio" layoutX="100" layoutY="200" />
+        <Label fx:id="email" layoutX="100" layoutY="220" />
+        <Label fx:id="total_workouts" layoutX="100" layoutY="240" />
+        <Label fx:id="total_minutes" layoutX="100" layoutY="260" />
+        <Label fx:id="avg_duration" layoutX="100" layoutY="280" />
+        <Button layoutX="91.0" layoutY="320" onAction="#handleBack" text="Return to Menu" />
+    </children>
+
+</AnchorPane>

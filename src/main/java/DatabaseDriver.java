@@ -93,6 +93,21 @@ public class DatabaseDriver{
         return members;
     }
 
+    public List<Member> getAllPublicMembers() throws SQLException {
+        if(connection.isClosed()) {
+            throw new IllegalStateException("Connection is not open");
+        }
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM member WHERE public_visibility = TRUE");
+        List<Member> members = new ArrayList<>();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while(resultSet.next()) {
+            Member member = buildMember(resultSet);
+            members.add(member);
+        }
+        preparedStatement.close();
+        return members;
+    }
+
     public Member getMemberByID(int member_id) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
