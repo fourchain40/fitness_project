@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
 
 public class EditProfileMemberController {
