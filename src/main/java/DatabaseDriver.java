@@ -382,34 +382,6 @@ public class DatabaseDriver{
         return false;
     }
 
-    public void updateTrainer(Trainer trainer) throws SQLException {
-        if(connection.isClosed()) {
-            throw new IllegalStateException("Connection is not open");
-        }
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                    """
-                        UPDATE trainer
-                        SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, years_of_experience = ?, bio = ?, specialization = ?
-                        WHERE trainer_id = ?
-                        """
-            );
-            preparedStatement.setString(1, trainer.getFirst_name());
-            preparedStatement.setString(2, trainer.getLast_name());
-            preparedStatement.setString(3, trainer.getGender());
-            preparedStatement.setObject(4, trainer.getDate_of_birth());
-            preparedStatement.setInt(5, trainer.getYears_of_experience());
-            preparedStatement.setString(6, trainer.getBio());
-            preparedStatement.setString(7, trainer.getSpecialization());
-            preparedStatement.setInt(8, trainer.getTrainer_id());
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-        } catch (SQLException e) {
-            rollback();
-            throw e;
-        }
-    }
-
     public void adminUpdateTrainer(Trainer trainer) throws SQLException {
         if(connection.isClosed()) {
             throw new IllegalStateException("Connection is not open");
