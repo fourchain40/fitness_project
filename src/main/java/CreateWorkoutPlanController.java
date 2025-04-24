@@ -28,10 +28,14 @@ public class CreateWorkoutPlanController {
             return;
         }
 
+        if (startDate.isAfter(endDate)) {
+            statusLabel.setText("End date must be after start date.");
+            return;
+        }
+
         try (Connection conn = DriverManager.getConnection(
                 "jdbc:postgresql://bastion.cs.virginia.edu:5432/group29", "group29", "C1mbI9G3")) {
 
-            // Get member_id by email
             PreparedStatement getMember = conn.prepareStatement("SELECT member_id FROM member WHERE email = ?");
             getMember.setString(1, email);
             ResultSet rs = getMember.executeQuery();
@@ -44,7 +48,6 @@ public class CreateWorkoutPlanController {
             int memberId = rs.getInt("member_id");
             int trainerId = Session.getInstance().getUserID();
 
-            // Insert workout plan
             PreparedStatement insertPlan = conn.prepareStatement(
                     "INSERT INTO WorkoutPlan (member_id, trainer_id, plan_name, start_date, end_date, description) " +
                             "VALUES (?, ?, ?, ?, ?, ?)");
