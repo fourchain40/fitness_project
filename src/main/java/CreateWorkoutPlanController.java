@@ -60,6 +60,11 @@ public class CreateWorkoutPlanController {
             insertPlan.executeUpdate();
 
             statusLabel.setText("Workout plan assigned successfully.");
+            emailField.clear();
+            planNameField.clear();
+            startDatePicker.setValue(null);
+            endDatePicker.setValue(null);
+            descriptionArea.clear();
         } catch (SQLException e) {
             e.printStackTrace();
             statusLabel.setText("Error assigning workout plan.");
