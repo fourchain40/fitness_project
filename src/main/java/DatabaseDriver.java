@@ -57,8 +57,8 @@ public class DatabaseDriver{
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
-                        INSERT INTO member (first_name, last_name, email, password, gender, date_of_birth, height, weight, bio)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO member (first_name, last_name, email, password, gender, date_of_birth, height, weight, bio, public_visibility)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """
             );
             preparedStatement.setString(1, member.getFirst_name());
@@ -70,6 +70,7 @@ public class DatabaseDriver{
             preparedStatement.setInt(7, member.getHeight());
             preparedStatement.setInt(8, member.getWeight());
             preparedStatement.setString(9, member.getBio());
+            preparedStatement.setBoolean(10, member.isPublic_visibility());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e) {
@@ -175,7 +176,7 @@ public class DatabaseDriver{
             PreparedStatement preparedStatement = connection.prepareStatement(
                     """
                         UPDATE member
-                        SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, height = ?, weight = ?, bio = ?
+                        SET first_name = ?, last_name = ?, gender = ?, date_of_birth = ?, height = ?, weight = ?, bio = ?, public_visibility = ?
                         WHERE member_id = ?
                         """
             );
@@ -186,7 +187,8 @@ public class DatabaseDriver{
             preparedStatement.setInt(5, member.getHeight());
             preparedStatement.setInt(6, member.getWeight());
             preparedStatement.setString(7, member.getBio());
-            preparedStatement.setInt(8, member.getMember_id());
+            preparedStatement.setBoolean(8, member.isPublic_visibility());
+            preparedStatement.setInt(9, member.getMember_id());
             preparedStatement.executeUpdate();
             preparedStatement.close();
         } catch (SQLException e) {
@@ -206,7 +208,8 @@ public class DatabaseDriver{
         int height = resultSet.getInt("height");
         int weight = resultSet.getInt("weight");
         String bio = resultSet.getString("bio");
-        return new Member(member_id, first_name, last_name, email, password, gender, date_of_birth, height, weight, bio);
+        boolean public_visibility = resultSet.getBoolean("public_visibility");
+        return new Member(member_id, first_name, last_name, email, password, gender, date_of_birth, height, weight, bio, public_visibility);
     }
 
     // Trainer operations
