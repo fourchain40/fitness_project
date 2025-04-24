@@ -11,9 +11,24 @@ public class Member{
     private int height;
     private int weight;
     private String bio;
+    private boolean public_visibility;
 
     public Member()
     {
+    }
+
+    public Member(int member_id, String first_name, String last_name, String email, String password, String gender, LocalDate date_of_birth, int height, int weight, String bio, boolean public_visibility) {
+        this.member_id = member_id;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.email = email;
+        this.password = password;
+        this.gender = gender;
+        this.date_of_birth = date_of_birth;
+        this.height = height;
+        this.weight = weight;
+        this.bio = bio;
+        this.public_visibility = public_visibility;
     }
 
     public Member(int member_id, String first_name, String last_name, String email, String password, String gender, LocalDate date_of_birth, int height, int weight, String bio) {
@@ -27,6 +42,7 @@ public class Member{
         this.height = height;
         this.weight = weight;
         this.bio = bio;
+        this.public_visibility = false;
     }
 
     public Member(String first_name, String last_name, String email, String password, String gender, LocalDate date_of_birth, int height, int weight, String bio) {
@@ -40,6 +56,7 @@ public class Member{
         this.height = height;
         this.weight = weight;
         this.bio = bio;
+        this.public_visibility = false;
     }
 
     public int getMember_id() {
@@ -120,6 +137,14 @@ public class Member{
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public boolean isPublic_visibility() {
+        return public_visibility;
+    }
+
+    public void setPublic_visibility(boolean public_visibility) {
+        this.public_visibility = public_visibility;
     }
 
     public boolean equals(Object object) {

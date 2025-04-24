@@ -19,6 +19,7 @@ public class EditProfileMemberController {
     @FXML private RadioButton female;
     @FXML private RadioButton male;
     @FXML private RadioButton other;
+    @FXML private CheckBox public_visibility;
 
     @FXML
     public void initialize() {
@@ -52,6 +53,9 @@ public class EditProfileMemberController {
             other.setSelected(true);
         }
         dob_picker.setValue(member.getDate_of_birth());
+        if (member.isPublic_visibility()) {
+            public_visibility.setSelected(true);
+        }
     }
 
     @FXML
@@ -75,8 +79,13 @@ public class EditProfileMemberController {
                 dob_picker.getValue(),
                 Integer.parseInt(height_field.getText()),
                 Integer.parseInt(weight_field.getText()),
-                bio_field.getText()
+                bio_field.getText(),
+                false
         );
+
+        if (public_visibility.isSelected()) {
+            member.setPublic_visibility(true);
+        }
 
         try {
             databaseDriver.connect();
